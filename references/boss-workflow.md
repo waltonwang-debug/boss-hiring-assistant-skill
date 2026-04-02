@@ -18,6 +18,24 @@ Primary business actions:
 6. Ask Lobster to create a Feishu interview event after candidate intent and time are confirmed
 7. Send the Feishu event link back in the BOSS chat
 
+## Default Operating Cadence
+
+Use a fixed cadence unless the user changes it:
+
+- active screening window: 09:00 to 17:00 local time
+- screening cycle: once every hour
+- summary cycle: once every hour
+
+Within each hourly cycle, Lobster should:
+
+1. scan the supported candidate sources
+2. update candidate classifications and reasons
+3. prepare one consolidated summary for the user
+4. ask which candidates may continue to the next communication step
+5. ask which candidates may proceed toward interview scheduling
+
+Outside the active screening window, do not continue scheduled scanning unless the user explicitly overrides the default.
+
 ## Candidate Sources
 
 ### `inbound_chat`
@@ -132,6 +150,31 @@ Allowed decisions:
 - `approval_required`
 - `pass_to_chat`
 
+## Hourly Summary Format
+
+The default summary should be grouped by candidate decision:
+
+- `pass_to_chat`
+- `approval_required`
+- `review_human`
+- `reject_soft`
+- `reject_hard`
+
+For each candidate, include:
+
+- candidate name or stable identifier
+- source
+- current decision
+- concise reasons for the decision
+- Lobster's recommended next step
+
+The summary should end with two explicit decision requests to the user:
+
+1. which candidates may continue to the next communication step, such as requesting an attachment resume
+2. which candidates may proceed to interview scheduling after time confirmation
+
+If Lobster has a clear recommendation, include it next to the candidate instead of silently waiting for the user to infer the next step.
+
 ## Process State Machine
 
 ```text
@@ -234,10 +277,13 @@ Default behavior:
 
 - Add the user themself to the Feishu event
 
-Optional behavior:
+When the first interview schedule is actually needed:
 
-- Ask the user once whether a specific additional Feishu attendee should be added by default
-- If yes, capture that attendee's account identifier and ensure Lobster requests the required permission scope
+- ask whether only the user should be added, or one extra fixed attendee should also be added
+- if the Feishu bot is not configured, ask the user to create it in Feishu Open Platform and return with `App ID` plus `App Secret`
+- after Lobster configures the bot locally, explicitly tell the user to go to the Feishu bot chat and ask the bot to test-create a schedule there
+- use that bot-chat flow to complete the needed calendar authorization
+- if event creation still fails because calendar permission is missing, guide the user to add the missing permission and retry through the same bot path
 
 ## Tool Boundary
 

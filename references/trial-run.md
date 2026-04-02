@@ -61,7 +61,9 @@ If the first run fails, check these in order:
 - when the first schedule is actually needed, confirm the Feishu bot is already configured
 - when the first schedule is actually needed, confirm the default attendee choice then instead of during onboarding
 - if the bot is not configured, ask the user to create it in Feishu Open Platform and provide `App ID` plus `App Secret`
-- after Lobster configures the bot locally, then confirm Lobster has the required Feishu bot permissions
+- after Lobster configures the bot locally, explicitly ask the user to go to the Feishu bot chat and test-create a schedule there
+- use that bot-chat interaction to complete the needed user authorization flow
+- then confirm Lobster has the required Feishu bot permissions
 - confirm the default attendee settings are correct
 - generate the Feishu bot schedule request preview before executing
 - do not retry by switching to API, OAuth, or web UI paths

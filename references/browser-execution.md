@@ -22,6 +22,7 @@ Before doing anything on BOSS, Lobster should check:
 
 If Chrome or Chromium is missing, then and only then ask the user to install one.
 If the browser capability contract is missing, or the switch to `web-access` is not confirmed, stop instead of improvising.
+If `web-access` is available, do not silently switch to screenshot-based reading, image interpretation, or unrelated browser tools.
 
 ## Supported Surfaces
 
@@ -33,9 +34,11 @@ If the browser capability contract is missing, or the switch to `web-access` is 
 ## Extraction Order
 
 1. Read visible card fields first
-2. Read the currently opened candidate detail if it is already visible
-3. Use stable selectors where possible
-4. Avoid screenshots unless the page cannot be parsed structurally
+2. Use `web-access` DOM reads on the current page
+3. Use `web-access` CDP evaluation if DOM reads are insufficient
+4. Read the currently opened candidate detail if it is already visible
+5. Use stable selectors where possible
+6. Avoid screenshots unless `web-access` structural access has clearly failed
 
 At the job-discovery stage, avoid loading message-template context. Message-template material belongs to the later communication stage, not the initial BOSS job and JD discovery stage.
 
@@ -49,6 +52,7 @@ Allowed pattern:
 - choose the `web-access` path
 - stay on the user's existing logged-in browser session
 - perform the minimum reads and clicks needed for the current step
+- prefer `web-access` DOM or CDP reads over screenshots
 
 Disallowed pattern:
 
@@ -56,6 +60,7 @@ Disallowed pattern:
 - letting `browser-use` or another generic browser tool silently take over the BOSS task
 - falling back to broad web exploration without first reporting the limitation
 - changing execution mode silently in the middle of a BOSS step
+- using screenshots for page understanding while `web-access` DOM or CDP access is still available
 
 ## Suggested Selectors
 
@@ -114,6 +119,7 @@ When there are multiple ways to complete the same BOSS task, prefer the most obs
 - already-open detail views over forced navigation
 - stable visible content over deep page traversal
 - explicit step confirmation over chained hidden actions
+- `web-access` DOM or CDP reads over screenshot or OCR-style interpretation
 
 This reduces the chance of unexpected redirects, login instability, or abnormal behavior patterns.
 

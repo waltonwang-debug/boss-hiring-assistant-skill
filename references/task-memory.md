@@ -52,11 +52,33 @@ The user should not need to install or manage a database manually.
 - current process state
 - last decision
 - action history
+- last hourly summary inclusion state
+- pending user confirmation for next chat step
+- pending user confirmation for interview progression
 - whether attachment resume was requested
 - whether attachment resume was received
 - whether interview intent was confirmed
 - whether interview time was confirmed
 - whether a Feishu schedule request was already sent to Lobster
+
+## Reporting Cadence Memory
+
+The task store should also keep a small reporting state, for example:
+
+```json
+{
+  "reporting_window": {
+    "start_hour_local": 9,
+    "end_hour_local": 17
+  },
+  "scan_interval_minutes": 60,
+  "summary_interval_minutes": 60,
+  "last_scan_at": "2026-04-02T10:00:00+08:00",
+  "last_summary_at": "2026-04-02T10:00:00+08:00"
+}
+```
+
+This lets Lobster avoid repeated summary spam and keeps the hourly review cycle stable.
 
 ## Retention Principle
 

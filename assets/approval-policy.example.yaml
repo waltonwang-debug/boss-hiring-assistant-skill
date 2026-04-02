@@ -4,6 +4,24 @@ automation:
   allow_auto_pass_to_chat: true
   allow_auto_request_attachment: true
   allow_auto_schedule_feishu_interview: true
+reporting_window:
+  enabled: true
+  local_timezone: "Asia/Shanghai"
+  active_days:
+    - "monday"
+    - "tuesday"
+    - "wednesday"
+    - "thursday"
+    - "friday"
+  start_time: "09:00"
+  end_time: "17:00"
+reporting:
+  scan_interval_minutes: 60
+  summary_interval_minutes: 60
+  summary_format: "group_by_decision_with_reasons"
+  include_recommended_next_step: true
+  ask_user_to_confirm_chat_progression: true
+  ask_user_to_confirm_interview_progression: true
 thresholds:
   auto_pass_min_score: 0.82
   auto_pass_min_confidence: 0.80
@@ -43,7 +61,8 @@ feishu:
   lobster_capability_required: true
   create_todo_items: false
   default_add_user_self: true
-  ask_once_for_extra_default_attendee: true
+  ask_default_attendees_on_first_schedule_attempt: true
+  require_bot_chat_test_authorization: true
   required_permissions:
     - "calendar.event:create"
     - "calendar.event:write"

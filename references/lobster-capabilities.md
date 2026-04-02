@@ -67,9 +67,17 @@ User remains responsible for:
 - Obtaining `App ID` and `App Secret`
 - Giving those credentials to Lobster so Lobster can finish local configuration
 - Adding missing calendar permissions in Feishu Open Platform when Lobster reports that permission is insufficient
+- Going into the Feishu bot chat and completing the in-chat calendar authorization flow when Lobster asks for the first schedule test
 
 Lobster must not attempt to create or configure the Feishu bot on the user's behalf inside Feishu Open Platform.
 Lobster must not open Feishu Open Platform pages, must not navigate the setup UI for the user, and must not click through the configuration flow. Lobster may only explain the steps and wait for the user to complete them manually.
+
+Feishu scheduling rule for this skill:
+
+- after Lobster receives `App ID` and `App Secret`, Lobster may finish local bot configuration
+- then Lobster must explicitly instruct the user to go to the Feishu bot chat and ask the bot to test-create a calendar event
+- use that bot-chat interaction to complete the required user authorization path for calendar scheduling
+- do not treat Open Platform background configuration alone as sufficient for first successful calendar scheduling
 
 ## Memory boundary
 

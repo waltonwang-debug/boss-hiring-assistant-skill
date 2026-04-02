@@ -49,6 +49,7 @@ Use this skill to provide:
 - BOSS-specific browser reading and pacing rules
 - BOSS-specific candidate source definitions
 - Job JD plus company-policy-driven screening
+- Fixed periodic screening and hourly reporting cadence
 - Human-review and approval boundaries
 - Default Chinese recruiting templates with optional overrides
 - BOSS-task memory structure
@@ -100,11 +101,22 @@ Use rules first and only use model judgment for boundary cases.
 5. Advance with guarded messaging.
 Use the built-in Chinese templates by default. Allow the user to override only the templates they care about.
 
-6. Keep BOSS-task memory.
+6. Run on a fixed reporting cadence.
+By default, run screening only during 09:00 to 17:00 local time, scan candidate sources once per hour, and send the user one hourly summary. The hourly summary must:
+
+- group candidates by classification outcome
+- include the reason for each classification
+- clearly ask the user which candidates may continue to the next chat step
+- clearly ask the user which candidates may proceed to interview scheduling once time is confirmed
+- include Lobster's recommendations, such as requesting an attachment resume or proposing interview progression
+
+Do not continuously interrupt the user outside the configured summary cadence unless a pause condition or approval exception is triggered.
+
+7. Keep BOSS-task memory.
 Maintain candidate state and action history in Lobster-managed local structured storage so the workflow can resume safely.
 
-7. Use Lobster's configured Feishu bot path only.
-During onboarding, only decide whether Feishu scheduling is enabled. When interview time is first confirmed for a candidate, then check whether the Feishu bot is configured and ask the user about default attendees. If the bot is not configured, stop and tell the user the exact Feishu Open Platform steps they must perform manually, then wait for the user to return with `App ID` and `App Secret`. If the bot is configured but missing permissions, tell the user the exact permission steps they must perform manually in Feishu Open Platform. Do not open Feishu setup pages or attempt the setup on the user's behalf. After configuration is complete, build a Feishu schedule request and execute it through the Feishu bot path only.
+8. Use Lobster's configured Feishu bot path only.
+During onboarding, only decide whether Feishu scheduling is enabled. When interview time is first confirmed for a candidate, then check whether the Feishu bot is configured and ask the user about default attendees. If the bot is not configured, stop and tell the user the exact Feishu Open Platform steps they must perform manually, then wait for the user to return with `App ID` and `App Secret`. After Lobster configures the bot locally, Lobster must explicitly tell the user to go to the Feishu bot chat and ask the bot to test-create a calendar event there, so the user can complete the in-chat authorization flow. Treat that bot-chat authorization path as the required path for calendar scheduling in this task. If scheduling still fails because permission is missing, tell the user the exact permission steps they must perform manually and then retry through the same bot path only. Do not open Feishu setup pages or attempt the setup on the user's behalf. Do not try background-only permission setup as a substitute for the bot-chat authorization path.
 
 ## Required Browser Primitives
 
@@ -117,6 +129,8 @@ For BOSS recruiting tasks, Lobster should only proceed if it has browser capabil
 - keep working on the same logged-in browser session
 
 These primitives must be provided through `web-access` for this task. If Lobster cannot map `web-access` to these primitives, or cannot confirm that conflicting browser tools have been disabled for the task, it must stop and explain that the required browser capability contract is not available.
+
+For page reading, prefer `web-access` CDP or DOM APIs first. Do not use screenshots or image interpretation when `web-access` can read the page structurally. Screenshot-based reading is a last resort only after `web-access` structural access clearly fails.
 
 ## Supported Candidate Sources
 

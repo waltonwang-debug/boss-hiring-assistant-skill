@@ -84,6 +84,8 @@ If the user wants the fastest path, Lobster should assume:
 - Use built-in Chinese templates
 - Enable attachment resume request automation
 - Enable interview scheduling after confirmed time
+- Use the default active screening window of 09:00 to 17:00 local time
+- Scan and summarize once every 60 minutes
 - Add only the user to Feishu by default
 - Keep human review enabled for edge cases
 
@@ -140,9 +142,11 @@ When the first candidate reaches confirmed interview time, then and only then Lo
    obtain `App ID` and `App Secret`
    return those credentials to Lobster
 4. once the user provides `App ID` and `App Secret`, let Lobster finish local bot configuration
-5. attempt schedule creation through the Feishu bot path only
-6. if schedule creation fails because the bot lacks calendar permission, guide the user step by step back to Feishu Open Platform to add the needed permission
-7. after the permission is added, retry through the same Feishu bot path only
+5. explicitly tell the user to go to the Feishu bot chat and ask the bot to test-create a schedule there
+6. use that bot-chat interaction to complete the in-chat calendar authorization flow
+7. attempt schedule creation through the Feishu bot path only
+8. if schedule creation fails because the bot lacks calendar permission, guide the user step by step back to Feishu Open Platform to add the needed permission
+9. after the permission is added, retry through the same bot path only
 
 Important boundary:
 
