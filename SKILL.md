@@ -30,6 +30,8 @@ For Feishu scheduling, the integration path is also strict:
 - if the Feishu bot is already configured, call the bot with the required schedule-creation permission
 - if schedule creation fails because of missing permission, guide the user step by step to Feishu Open Platform to add the calendar permission, then retry through the same bot path
 
+For this Feishu setup path, Lobster must only provide instructions. Lobster must not open Feishu Open Platform pages, must not click through the setup flow, and must not attempt to complete platform configuration on the user's behalf.
+
 Do not probe multiple Feishu integration methods. Do not try direct API, then OAuth, then web UI in sequence.
 
 For BOSS Zhipin recruiting, the browser-access precondition is strict:
@@ -102,7 +104,7 @@ Use the built-in Chinese templates by default. Allow the user to override only t
 Maintain candidate state and action history in Lobster-managed local structured storage so the workflow can resume safely.
 
 7. Use Lobster's configured Feishu bot path only.
-During onboarding, only decide whether Feishu scheduling is enabled. When interview time is first confirmed for a candidate, then check whether the Feishu bot is configured and ask the user about default attendees. If the bot is not configured, stop and ask the user to go to Feishu Open Platform, create the bot or app, obtain `App ID` and `App Secret`, and provide them to Lobster for configuration. If the bot is configured but missing permissions, guide the user to Feishu Open Platform to add the needed calendar permission. After configuration is complete, build a Feishu schedule request and execute it through the Feishu bot path only.
+During onboarding, only decide whether Feishu scheduling is enabled. When interview time is first confirmed for a candidate, then check whether the Feishu bot is configured and ask the user about default attendees. If the bot is not configured, stop and tell the user the exact Feishu Open Platform steps they must perform manually, then wait for the user to return with `App ID` and `App Secret`. If the bot is configured but missing permissions, tell the user the exact permission steps they must perform manually in Feishu Open Platform. Do not open Feishu setup pages or attempt the setup on the user's behalf. After configuration is complete, build a Feishu schedule request and execute it through the Feishu bot path only.
 
 ## Required Browser Primitives
 

@@ -69,6 +69,7 @@ User remains responsible for:
 - Adding missing calendar permissions in Feishu Open Platform when Lobster reports that permission is insufficient
 
 Lobster must not attempt to create or configure the Feishu bot on the user's behalf inside Feishu Open Platform.
+Lobster must not open Feishu Open Platform pages, must not navigate the setup UI for the user, and must not click through the configuration flow. Lobster may only explain the steps and wait for the user to complete them manually.
 
 ## Memory boundary
 

@@ -66,6 +66,7 @@ If the first run fails, check these in order:
 - generate the Feishu bot schedule request preview before executing
 - do not retry by switching to API, OAuth, or web UI paths
 - if the bot lacks calendar permission, guide the user back to Feishu Open Platform to add it, then retry through the same bot path
+- do not open Feishu Open Platform pages on the user's behalf during this process
 
 5. Policy mismatch
 - confirm the selected role policy actually matches the current JD

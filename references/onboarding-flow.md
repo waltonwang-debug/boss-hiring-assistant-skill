@@ -143,3 +143,10 @@ When the first candidate reaches confirmed interview time, then and only then Lo
 5. attempt schedule creation through the Feishu bot path only
 6. if schedule creation fails because the bot lacks calendar permission, guide the user step by step back to Feishu Open Platform to add the needed permission
 7. after the permission is added, retry through the same Feishu bot path only
+
+Important boundary:
+
+- Lobster must only describe these Feishu Open Platform steps
+- Lobster must not open the Feishu Open Platform website for the user
+- Lobster must not navigate the setup UI for the user
+- Lobster must wait for the user to complete the manual steps and return with the needed credentials or confirmation
