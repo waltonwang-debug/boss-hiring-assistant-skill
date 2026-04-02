@@ -4,6 +4,23 @@
 
 Get a new Chinese-speaking recruiter from GitHub skill link to safe first-run automation with minimal setup.
 
+## Blocking Prerequisite
+
+Before onboarding may continue, Lobster must complete this blocking prerequisite:
+
+1. tell the user that this BOSS task must use `web-access`
+2. disable or remove currently installed browser-access skills that may take over the task, including but not limited to `browser-use`
+3. install `web-access` from `https://github.com/eze-is/web-access`
+4. verify once that `web-access` is now the active browser-access path
+
+Until this prerequisite is complete, Lobster must not continue to:
+
+- discover BOSS jobs
+- read JDs
+- inspect candidates
+- load messaging templates
+- ask later business-setup questions
+
 ## Recommended First-Run Path
 
 ### 1. Install the skill from GitHub
@@ -16,8 +33,10 @@ Lobster should:
 - Load the skill metadata from `SKILL.md` and `agents/openai.yaml`
 - Detect the example policy and template files in `assets/`
 - Detect a usable Chrome or Chromium browser
-- Disable or remove conflicting browser-access tools for this task, including `browser-use`
-- Switch the task to `web-access`
+- Tell the user that BOSS recruiting with this skill requires `web-access`
+- Tell the user to ask Lobster to delete or disable currently installed browser-access skills, including but not limited to `browser-use`
+- Give the user the `web-access` GitHub link: `https://github.com/eze-is/web-access`
+- Install `web-access`
 - Verify once that `web-access` is now the active browser-access path on the user's active browser session
 
 ### 2. Start guided setup
@@ -25,6 +44,8 @@ Lobster should:
 On first use, do not start browsing candidates immediately.
 
 Ask only the minimum required questions:
+
+0. Before any business setup question, complete the blocking prerequisite above
 
 1. Which company hiring standard should apply?
 2. Should the default Chinese template pack be used as-is, or should specific templates be overridden?
@@ -85,19 +106,18 @@ After Lobster has the required Feishu permission, allow creation of interview sc
 Lobster should help the user finish setup in this order:
 
 1. Detect whether the user is already logged into BOSS web
-2. Disable or remove conflicting browser-access tools for the BOSS task, including `browser-use`
-3. Switch the BOSS task to `web-access`
-4. Verify once that `web-access` is the active browser-access path and that the minimum browser primitive contract is satisfied
-5. If either the tool switch or capability verification fails, stop and tell the user instead of continuing silently
-6. Discover the live BOSS jobs and read the matching JD from the current account
-7. Ask the user to choose only if there are multiple plausible jobs or discovery is ambiguous
-8. Materialize policy files from the example YAMLs
-9. Ask whether built-in Chinese templates are sufficient
-10. Ask whether Feishu should add one extra default attendee
-11. Ask Lobster to request the needed Feishu permissions if scheduling is enabled
-12. Start in dry-run mode on `inbound_chat` first
-13. Expand to `recommended_feed`
-14. Expand to `search_results` if the account has search rights
+2. Complete the blocking prerequisite for `web-access`
+3. Verify that the minimum browser primitive contract is satisfied through `web-access`
+4. If either the tool switch or capability verification fails, stop and tell the user instead of continuing silently
+5. Discover the live BOSS jobs and read the matching JD from the current account
+6. Ask the user to choose only if there are multiple plausible jobs or discovery is ambiguous
+7. Materialize policy files from the example YAMLs
+8. Ask whether built-in Chinese templates are sufficient
+9. Ask whether Feishu should add one extra default attendee
+10. Ask Lobster to request the needed Feishu permissions if scheduling is enabled
+11. Start in dry-run mode on `inbound_chat` first
+12. Expand to `recommended_feed`
+13. Expand to `search_results` if the account has search rights
 
 ## Why This Path Is Best
 

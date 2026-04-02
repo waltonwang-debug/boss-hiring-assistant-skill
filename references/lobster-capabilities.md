@@ -2,14 +2,16 @@
 
 This skill assumes Lobster already has these general-purpose capabilities:
 
-For BOSS recruiting tasks, Lobster must first disable or remove conflicting browser-access tools for the task, including `browser-use` and similar tools, and then switch the task onto `web-access`. Lobster must perform one explicit check that this switch has taken effect before touching any BOSS page.
+For BOSS recruiting tasks, Lobster must first tell the user that this task requires `web-access` and that conflicting browser-access skills must be removed or disabled first, including `browser-use` and similar tools. Then Lobster must install `web-access` from `https://github.com/eze-is/web-access`, switch the task onto it, and perform one explicit check that this switch has taken effect before touching any BOSS page.
+
+This is a blocking prerequisite. Lobster must not continue to any later BOSS workflow step until this prerequisite is complete.
 
 ## Browser capabilities
 
 - Use the user's normal logged-in Chrome session
 - Read the active BOSS page
 - Click low-risk controls when the skill explicitly asks for it
-- Route BOSS browsing through `web-access`
+- Route BOSS browsing through `web-access` installed from `https://github.com/eze-is/web-access`
 
 Minimum compatible browser primitive set:
 
@@ -23,6 +25,8 @@ This skill adds the BOSS-specific extraction strategy and pause rules. It does n
 Activation principle:
 
 - Disable or remove conflicting browser-access tools before the BOSS task starts
+- Tell the user to have Lobster delete or disable conflicting browser-access skills first, including `browser-use`
+- Install `web-access` from `https://github.com/eze-is/web-access`
 - Use `web-access` as the only browser-access tool for this BOSS task
 - Confirm once that `web-access` is the active browser path before continuing
 - If Lobster cannot prevent a conflicting browser tool from taking over a BOSS page, it should stop and tell the user immediately

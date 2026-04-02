@@ -4,7 +4,9 @@
 
 Use `web-access` on the user's real Chrome or Chromium session while minimizing the chance of triggering BOSS risk controls.
 
-Before any BOSS action starts, Lobster must disable or remove conflicting browser-access tools for this task, including `browser-use` and similar tools, and switch the task to `web-access`. If that switch cannot be enforced and verified once, stop and report it to the user before touching the BOSS page.
+Before any BOSS action starts, Lobster must tell the user that this task requires `web-access`, ask the user to have Lobster remove or disable conflicting browser-access skills including `browser-use`, and then install `web-access` from `https://github.com/eze-is/web-access`. If that switch cannot be enforced and verified once, stop and report it to the user before touching the BOSS page.
+
+This is a blocking prerequisite, not a suggestion. Do not continue to job discovery or candidate inspection before it is complete.
 
 ## Environment Checks
 
@@ -15,7 +17,7 @@ Before doing anything on BOSS, Lobster should check:
 3. The page is not showing verification, login expiry, or risk interruption
 4. The current tab belongs to a supported BOSS workflow surface
 5. Conflicting browser-access tools such as `browser-use` have been disabled or removed for this task
-6. `web-access` is the active browser-access tool for this task
+6. `web-access` installed from `https://github.com/eze-is/web-access` is the active browser-access tool for this task
 7. The currently available `web-access` path can satisfy the minimum browser primitives defined by this skill
 
 If Chrome or Chromium is missing, then and only then ask the user to install one.

@@ -11,10 +11,21 @@ Use this skill to help Lobster run BOSS Zhipin recruiting workflows through the 
 
 This skill is a Boss-specific strategy pack. It is not a standalone program and it does not replace Lobster's general browser or Feishu capabilities.
 
+## Mandatory First-Run Prerequisite
+
+Before any BOSS workflow starts, Lobster must treat the following as a blocking prerequisite:
+
+1. disable or remove currently installed browser-access skills that may take over the task, including but not limited to `browser-use`
+2. install `web-access` from `https://github.com/eze-is/web-access`
+3. switch this BOSS task onto `web-access`
+4. verify once that `web-access` is the active browser-access path for the task
+
+If any of these steps fail, Lobster must stop and tell the user that the prerequisite is incomplete. Lobster must not continue into job discovery, candidate reading, messaging, or scheduling before this prerequisite is satisfied.
+
 For BOSS Zhipin recruiting, the browser-access precondition is strict:
 
 - disable or remove already installed generic browser-access tools for this task, including `browser-use` and similar tools
-- use `web-access` as the browser-access tool for this task
+- install and use `web-access` as the browser-access tool for this task: `https://github.com/eze-is/web-access`
 - verify once that the switch has actually taken effect before touching any BOSS page
 
 If this precondition is not satisfied, Lobster must stop and tell the user instead of continuing.
@@ -42,7 +53,7 @@ Confirm:
 - the current page is a supported BOSS workflow page
 - Lobster has or can request the needed Feishu permission later if scheduling is enabled
 - installed browser-access tools that would take over BOSS browsing, including `browser-use`, have been disabled or removed for this task
-- `web-access` is the active browser-access tool for this task
+- `web-access` is installed from `https://github.com/eze-is/web-access` and is the active browser-access tool for this task
 - the browser-access switch to `web-access` has been checked once and confirmed before continuing
 
 After login is confirmed, Lobster should first discover the user's live BOSS job postings and read the corresponding JD from the current account. Do not ask the user to manually type the role or JD unless automatic discovery fails or there are multiple plausible jobs that require user selection.
