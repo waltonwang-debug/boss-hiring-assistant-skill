@@ -17,7 +17,7 @@ Run a safe first real-world test after the skill is installed from GitHub.
 - extracted candidate summary
 - decision result
 - message preview
-- Feishu capability request preview, if applicable
+- Feishu bot schedule request preview, if applicable
 9. Only after the user confirms the previews, allow automatic message sending
 
 ## What To Verify
@@ -57,9 +57,13 @@ If the first run fails, check these in order:
 - resume only after the page is back to a normal recruiting state
 
 4. Feishu capability
-- confirm Lobster has the required Feishu permissions
+- if no candidate has reached confirmed interview time yet, do not force Feishu bot configuration during onboarding
+- when the first schedule is actually needed, confirm the Feishu bot is already configured
+- when the first schedule is actually needed, confirm the default attendee choice then instead of during onboarding
+- then confirm Lobster has the required Feishu bot permissions
 - confirm the default attendee settings are correct
-- retry by generating the Feishu capability request preview before executing
+- generate the Feishu bot schedule request preview before executing
+- do not retry by switching to API, OAuth, or web UI paths
 
 5. Policy mismatch
 - confirm the selected role policy actually matches the current JD

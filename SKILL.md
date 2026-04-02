@@ -22,6 +22,14 @@ Before any BOSS workflow starts, Lobster must treat the following as a blocking 
 
 If any of these steps fail, Lobster must stop and tell the user that the prerequisite is incomplete. Lobster must not continue into job discovery, candidate reading, messaging, or scheduling before this prerequisite is satisfied.
 
+For Feishu scheduling, the integration path is also strict:
+
+- use the user's configured Feishu bot path
+- if the Feishu bot is not configured yet, stop and guide the user through bot configuration first
+- if the Feishu bot is already configured, call the bot with the required schedule-creation permission
+
+Do not probe multiple Feishu integration methods. Do not try direct API, then OAuth, then web UI in sequence.
+
 For BOSS Zhipin recruiting, the browser-access precondition is strict:
 
 - disable or remove already installed generic browser-access tools for this task, including `browser-use` and similar tools
@@ -91,8 +99,8 @@ Use the built-in Chinese templates by default. Allow the user to override only t
 6. Keep BOSS-task memory.
 Maintain candidate state and action history in Lobster-managed local structured storage so the workflow can resume safely.
 
-7. Use Lobster's Feishu capability instead of a separate Feishu client.
-When interview time is confirmed, build a Feishu schedule request and ask Lobster to execute it with its existing Feishu capability.
+7. Use Lobster's configured Feishu bot path only.
+During onboarding, only decide whether Feishu scheduling is enabled. When interview time is first confirmed for a candidate, then check whether the Feishu bot is configured and ask the user about default attendees. If the bot is not configured, stop and guide the user through bot setup before continuing. If it is configured, build a Feishu schedule request and execute it through the Feishu bot path only.
 
 ## Required Browser Primitives
 

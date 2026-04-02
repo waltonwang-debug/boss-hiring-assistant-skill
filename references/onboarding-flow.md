@@ -50,7 +50,6 @@ Ask only the minimum required questions:
 1. Which company hiring standard should apply?
 2. Should the default Chinese template pack be used as-is, or should specific templates be overridden?
 3. Should Feishu interview scheduling be enabled after time confirmation?
-4. Should the Feishu event add only the user, or also one specific extra attendee by default?
 
 If the user has not prepared policy files yet, start from the examples in `assets/`.
 
@@ -113,11 +112,9 @@ Lobster should help the user finish setup in this order:
 6. Ask the user to choose only if there are multiple plausible jobs or discovery is ambiguous
 7. Materialize policy files from the example YAMLs
 8. Ask whether built-in Chinese templates are sufficient
-9. Ask whether Feishu should add one extra default attendee
-10. Ask Lobster to request the needed Feishu permissions if scheduling is enabled
-11. Start in dry-run mode on `inbound_chat` first
-12. Expand to `recommended_feed`
-13. Expand to `search_results` if the account has search rights
+9. Start in dry-run mode on `inbound_chat` first
+10. Expand to `recommended_feed`
+11. Expand to `search_results` if the account has search rights
 
 ## Why This Path Is Best
 
@@ -128,3 +125,15 @@ This first-run path optimizes for:
 - Low BOSS risk
 - Low template configuration burden
 - Safe introduction of Lobster-driven Feishu scheduling
+
+## First Schedule Attempt
+
+Do not ask about Feishu bot configuration details during initial onboarding.
+
+When the first candidate reaches confirmed interview time, then and only then Lobster should:
+
+1. check whether the user's Feishu bot is already configured for calendar scheduling
+2. ask whether the schedule should add only the user, or also one specific extra attendee by default
+3. if the bot is not configured, pause and guide the user through bot configuration
+4. if configured, request or use the needed bot permission
+5. create the schedule through the Feishu bot path only

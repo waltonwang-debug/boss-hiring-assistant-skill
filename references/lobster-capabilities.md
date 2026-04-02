@@ -34,7 +34,14 @@ Activation principle:
 
 ## Feishu capabilities
 
-Lobster should request and use the user's existing Feishu capability for interview scheduling.
+Lobster should request and use the user's configured Feishu bot capability for interview scheduling.
+
+This is a single approved path:
+
+- if the Feishu bot is already configured, use it directly
+- if the Feishu bot is not configured, stop and guide the user through bot configuration first
+- do not explore multiple Feishu paths speculatively
+- do not try API, then OAuth, then browser or web UI in sequence
 
 Required permissions:
 
@@ -50,7 +57,7 @@ This skill provides:
 Lobster remains responsible for:
 
 - Requesting the permissions from the user
-- Using the existing Feishu app or bot connection
+- Using the existing configured Feishu bot connection
 - Creating the event and returning the join link
 
 ## Memory boundary
