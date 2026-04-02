@@ -134,6 +134,12 @@ When the first candidate reaches confirmed interview time, then and only then Lo
 
 1. check whether the user's Feishu bot is already configured for calendar scheduling
 2. ask whether the schedule should add only the user, or also one specific extra attendee by default
-3. if the bot is not configured, pause and guide the user through bot configuration
-4. if configured, request or use the needed bot permission
-5. create the schedule through the Feishu bot path only
+3. if the bot is not configured, pause and instruct the user to:
+   go to Feishu Open Platform
+   create the bot or app
+   obtain `App ID` and `App Secret`
+   return those credentials to Lobster
+4. once the user provides `App ID` and `App Secret`, let Lobster finish local bot configuration
+5. attempt schedule creation through the Feishu bot path only
+6. if schedule creation fails because the bot lacks calendar permission, guide the user step by step back to Feishu Open Platform to add the needed permission
+7. after the permission is added, retry through the same Feishu bot path only

@@ -60,6 +60,16 @@ Lobster remains responsible for:
 - Using the existing configured Feishu bot connection
 - Creating the event and returning the join link
 
+User remains responsible for:
+
+- Going to Feishu Open Platform
+- Creating the bot or app there
+- Obtaining `App ID` and `App Secret`
+- Giving those credentials to Lobster so Lobster can finish local configuration
+- Adding missing calendar permissions in Feishu Open Platform when Lobster reports that permission is insufficient
+
+Lobster must not attempt to create or configure the Feishu bot on the user's behalf inside Feishu Open Platform.
+
 ## Memory boundary
 
 Lobster's generic memory is not assumed to be sufficient for this workflow.
