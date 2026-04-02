@@ -2,20 +2,31 @@
 
 This skill assumes Lobster already has these general-purpose capabilities:
 
-When Lobster also has a generic browser skill such as `browser-use`, that generic skill should not become the default controller for BOSS recruiting tasks. This skill should override the generic route for BOSS pages because the pacing, extraction, and pause rules are site-specific.
+For BOSS recruiting tasks, Lobster must first disable or remove conflicting browser-access tools for the task, including `browser-use` and similar tools, and then switch the task onto `web-access`. Lobster must perform one explicit check that this switch has taken effect before touching any BOSS page.
 
 ## Browser capabilities
 
 - Use the user's normal logged-in Chrome session
 - Read the active BOSS page
 - Click low-risk controls when the skill explicitly asks for it
+- Route BOSS browsing through `web-access`
 
-This skill adds the BOSS-specific extraction strategy and pause rules. It does not replace Lobster's general browser automation layer.
-Fallback principle:
+Minimum compatible browser primitive set:
 
-- Use this skill first for all BOSS recruiting pages
-- Use a generic browser skill only as a fallback when this skill's BOSS-specific path cannot complete a required read or click
-- If a fallback is used, keep the same conservative pacing and pause conditions
+- inspect the active tab
+- read visible DOM text
+- read the currently opened detail panel or page
+- click specific low-risk controls
+- remain in the same logged-in browser session
+
+This skill adds the BOSS-specific extraction strategy and pause rules. It does not replace Lobster's general browser automation layer, but for this task the compatible browser layer must be `web-access`.
+Activation principle:
+
+- Disable or remove conflicting browser-access tools before the BOSS task starts
+- Use `web-access` as the only browser-access tool for this BOSS task
+- Confirm once that `web-access` is the active browser path before continuing
+- If Lobster cannot prevent a conflicting browser tool from taking over a BOSS page, it should stop and tell the user immediately
+- If Lobster cannot satisfy the minimum browser primitive set through `web-access`, it should stop and tell the user immediately
 
 ## Feishu capabilities
 

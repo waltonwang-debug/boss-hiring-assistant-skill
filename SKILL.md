@@ -11,7 +11,13 @@ Use this skill to help Lobster run BOSS Zhipin recruiting workflows through the 
 
 This skill is a Boss-specific strategy pack. It is not a standalone program and it does not replace Lobster's general browser or Feishu capabilities.
 
-When the task is about BOSS Zhipin recruiting, this skill should take precedence over any generic browser skill. Do not default to a general browser workflow such as `browser-use` for BOSS pages unless this skill explicitly says a fallback is needed.
+For BOSS Zhipin recruiting, the browser-access precondition is strict:
+
+- disable or remove already installed generic browser-access tools for this task, including `browser-use` and similar tools
+- use `web-access` as the browser-access tool for this task
+- verify once that the switch has actually taken effect before touching any BOSS page
+
+If this precondition is not satisfied, Lobster must stop and tell the user instead of continuing.
 
 ## Core Responsibilities
 
@@ -25,6 +31,8 @@ Use this skill to provide:
 - BOSS-task memory structure
 - The contract for when Lobster should call its existing Feishu capability
 
+This skill defines process constraints and capability contracts. If Lobster does not currently have a compatible `web-access`-backed browser capability that can satisfy these contracts, it must stop and tell the user. It must not improvise with unrelated browser-access methods.
+
 ## Execution Rules
 
 1. Check environment first.
@@ -33,8 +41,12 @@ Confirm:
 - the user is logged into the BOSS web app
 - the current page is a supported BOSS workflow page
 - Lobster has or can request the needed Feishu permission later if scheduling is enabled
+- installed browser-access tools that would take over BOSS browsing, including `browser-use`, have been disabled or removed for this task
+- `web-access` is the active browser-access tool for this task
+- the browser-access switch to `web-access` has been checked once and confirmed before continuing
 
 After login is confirmed, Lobster should first discover the user's live BOSS job postings and read the corresponding JD from the current account. Do not ask the user to manually type the role or JD unless automatic discovery fails or there are multiple plausible jobs that require user selection.
+During this job-discovery stage, do not preload chat-template references or other later-stage messaging materials. Load only the minimum browser and workflow context needed to inspect the logged-in BOSS account and discover the live job plus JD.
 
 2. Use the safest browser path available.
 Prefer:
@@ -44,7 +56,8 @@ Prefer:
 - sequential, observable steps instead of bursty multi-step automation
 
 Avoid heavy screenshot interpretation when the page can be read structurally.
-For BOSS pages, do not hand control to a generic browser skill by default. Apply the BOSS-specific execution rules in this skill first, and only use a generic browser fallback if the BOSS-specific path is blocked and the user still wants to continue.
+For BOSS pages, use `web-access` as the browser-access layer for this task. Do not hand control to `browser-use` or any other generic browser tool, and do not continue unless the precondition check confirms that `web-access` is now the active path.
+Do not freely switch among unrelated browser-access methods. Choose the `web-access` path for the current BOSS task and stay within it unless the skill explicitly requires a pause.
 
 3. Keep BOSS behavior conservative.
 - reuse the user's normal logged-in browser session
@@ -69,6 +82,18 @@ Maintain candidate state and action history in Lobster-managed local structured 
 
 7. Use Lobster's Feishu capability instead of a separate Feishu client.
 When interview time is confirmed, build a Feishu schedule request and ask Lobster to execute it with its existing Feishu capability.
+
+## Required Browser Primitives
+
+For BOSS recruiting tasks, Lobster should only proceed if it has browser capabilities equivalent to these primitives:
+
+- inspect the active browser tab
+- read visible DOM text from the current page
+- read the currently opened candidate detail panel or page
+- click a specific low-risk control when the skill explicitly calls for it
+- keep working on the same logged-in browser session
+
+These primitives must be provided through `web-access` for this task. If Lobster cannot map `web-access` to these primitives, or cannot confirm that conflicting browser tools have been disabled for the task, it must stop and explain that the required browser capability contract is not available.
 
 ## Supported Candidate Sources
 

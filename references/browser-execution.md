@@ -2,9 +2,9 @@
 
 ## Goal
 
-Use Lobster's existing browser capability on the user's real Chrome or Chromium session while minimizing the chance of triggering BOSS risk controls.
+Use `web-access` on the user's real Chrome or Chromium session while minimizing the chance of triggering BOSS risk controls.
 
-If Lobster has both this skill and a generic browser skill, route BOSS recruiting tasks to this skill first. Do not let a generic browser skill choose the default execution plan for BOSS pages.
+Before any BOSS action starts, Lobster must disable or remove conflicting browser-access tools for this task, including `browser-use` and similar tools, and switch the task to `web-access`. If that switch cannot be enforced and verified once, stop and report it to the user before touching the BOSS page.
 
 ## Environment Checks
 
@@ -14,8 +14,12 @@ Before doing anything on BOSS, Lobster should check:
 2. The user is already logged into the BOSS web app
 3. The page is not showing verification, login expiry, or risk interruption
 4. The current tab belongs to a supported BOSS workflow surface
+5. Conflicting browser-access tools such as `browser-use` have been disabled or removed for this task
+6. `web-access` is the active browser-access tool for this task
+7. The currently available `web-access` path can satisfy the minimum browser primitives defined by this skill
 
 If Chrome or Chromium is missing, then and only then ask the user to install one.
+If the browser capability contract is missing, or the switch to `web-access` is not confirmed, stop instead of improvising.
 
 ## Supported Surfaces
 
@@ -30,6 +34,26 @@ If Chrome or Chromium is missing, then and only then ask the user to install one
 2. Read the currently opened candidate detail if it is already visible
 3. Use stable selectors where possible
 4. Avoid screenshots unless the page cannot be parsed structurally
+
+At the job-discovery stage, avoid loading message-template context. Message-template material belongs to the later communication stage, not the initial BOSS job and JD discovery stage.
+
+## Tool Discipline
+
+Do not hop across unrelated browser-access methods during one BOSS task.
+
+Allowed pattern:
+
+- disable conflicting browser tools for the task
+- choose the `web-access` path
+- stay on the user's existing logged-in browser session
+- perform the minimum reads and clicks needed for the current step
+
+Disallowed pattern:
+
+- trying multiple unrelated browser-access approaches speculatively
+- letting `browser-use` or another generic browser tool silently take over the BOSS task
+- falling back to broad web exploration without first reporting the limitation
+- changing execution mode silently in the middle of a BOSS step
 
 ## Suggested Selectors
 
@@ -108,18 +132,8 @@ The skill should treat BOSS as a high-sensitivity site.
 The goal is not to bypass anti-automation systems.
 The goal is to behave conservatively enough that Lobster can assist real recruiting work without creating obviously abnormal browser patterns.
 
-## Fallback Boundary
+## Execution Boundary
 
-Generic browser skills may exist in the environment, but for BOSS they should be treated only as a backup execution path.
+For this skill, the browser-access path is `web-access`.
 
-Use a generic browser fallback only when:
-
-- the BOSS-specific reading path cannot extract required information
-- a required click cannot be completed with the conservative BOSS strategy
-- the user still wants to proceed after the limitation is explained
-
-Even in fallback mode, keep:
-
-- one-candidate-at-a-time execution
-- low interaction density
-- immediate pause on verification or abnormal redirects
+If Lobster cannot get the task onto `web-access`, or cannot verify that conflicting browser tools have been disabled for the task, it must pause and report the limitation instead of continuing with another browser tool.

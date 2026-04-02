@@ -16,7 +16,9 @@ Lobster should:
 - Load the skill metadata from `SKILL.md` and `agents/openai.yaml`
 - Detect the example policy and template files in `assets/`
 - Detect a usable Chrome or Chromium browser
-- Use its own browser capability on the user's active browser session
+- Disable or remove conflicting browser-access tools for this task, including `browser-use`
+- Switch the task to `web-access`
+- Verify once that `web-access` is now the active browser-access path on the user's active browser session
 
 ### 2. Start guided setup
 
@@ -36,6 +38,8 @@ Before asking about a target role, Lobster should first inspect the logged-in BO
 - there are multiple plausible jobs and the choice is ambiguous
 - the current account does not expose the JD clearly
 - the user wants to override the discovered job
+
+At this discovery stage, do not load message-template references yet. Job discovery should stay narrow and only use the minimum browser and workflow context needed to inspect the logged-in BOSS account.
 
 ## Minimum Setup Artifacts
 
@@ -81,15 +85,19 @@ After Lobster has the required Feishu permission, allow creation of interview sc
 Lobster should help the user finish setup in this order:
 
 1. Detect whether the user is already logged into BOSS web
-2. Discover the live BOSS jobs and read the matching JD from the current account
-3. Ask the user to choose only if there are multiple plausible jobs or discovery is ambiguous
-4. Materialize policy files from the example YAMLs
-5. Ask whether built-in Chinese templates are sufficient
-6. Ask whether Feishu should add one extra default attendee
-7. Ask Lobster to request the needed Feishu permissions if scheduling is enabled
-8. Start in dry-run mode on `inbound_chat` first
-9. Expand to `recommended_feed`
-10. Expand to `search_results` if the account has search rights
+2. Disable or remove conflicting browser-access tools for the BOSS task, including `browser-use`
+3. Switch the BOSS task to `web-access`
+4. Verify once that `web-access` is the active browser-access path and that the minimum browser primitive contract is satisfied
+5. If either the tool switch or capability verification fails, stop and tell the user instead of continuing silently
+6. Discover the live BOSS jobs and read the matching JD from the current account
+7. Ask the user to choose only if there are multiple plausible jobs or discovery is ambiguous
+8. Materialize policy files from the example YAMLs
+9. Ask whether built-in Chinese templates are sufficient
+10. Ask whether Feishu should add one extra default attendee
+11. Ask Lobster to request the needed Feishu permissions if scheduling is enabled
+12. Start in dry-run mode on `inbound_chat` first
+13. Expand to `recommended_feed`
+14. Expand to `search_results` if the account has search rights
 
 ## Why This Path Is Best
 
