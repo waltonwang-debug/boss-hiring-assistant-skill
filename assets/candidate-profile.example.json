@@ -1,0 +1,35 @@
+{
+  "candidate_id": "boss_001",
+  "source": "recommended_feed",
+  "basic_info": {
+    "city": "Shanghai",
+    "education": "bachelor",
+    "years_of_experience": 5,
+    "work_status": "open_to_opportunities"
+  },
+  "target_info": {
+    "target_role": "Backend Engineer",
+    "target_city": "Shanghai",
+    "target_salary_range": "35-45k"
+  },
+  "career_history": [
+    {
+      "company": "Example SaaS",
+      "title": "Senior Backend Engineer",
+      "period": "2022-01 to present",
+      "industry": "saas"
+    }
+  ],
+  "evidence_tags": [
+    "java",
+    "spring boot",
+    "microservices",
+    "to_b"
+  ],
+  "risk_signals": [],
+  "chat_context": {
+    "has_chat_thread": true,
+    "has_attachment_resume": false,
+    "last_message_direction": "candidate"
+  }
+}

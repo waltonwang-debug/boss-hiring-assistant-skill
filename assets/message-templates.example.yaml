@@ -1,0 +1,15 @@
+version: "1"
+mode: "builtin_with_optional_overrides"
+overrides:
+  request_attachment_resume: ""
+  attachment_followup: ""
+  interview_intent_probe: ""
+  collect_availability: ""
+  confirm_interview_time: ""
+  send_feishu_schedule_link: ""
+  candidate_reject_polite: ""
+generation_rules:
+  max_sentences: 4
+  keep_tone: "professional_warm"
+  must_not_request_private_contact: true
+  must_not_make_offer_promises: true

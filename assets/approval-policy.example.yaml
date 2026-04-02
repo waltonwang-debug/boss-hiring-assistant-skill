@@ -1,0 +1,53 @@
+version: "1"
+automation:
+  allow_auto_reject: true
+  allow_auto_pass_to_chat: true
+  allow_auto_request_attachment: true
+  allow_auto_schedule_feishu_interview: true
+thresholds:
+  auto_pass_min_score: 0.82
+  auto_pass_min_confidence: 0.80
+  human_review_score_floor: 0.55
+  approval_required_for:
+    - "salary_exception"
+    - "level_exception"
+    - "location_exception"
+    - "headcount_exception"
+  always_review_for:
+    - "high_value_candidate"
+    - "contradictory_resume"
+    - "sparse_evidence"
+chat_policy:
+  template_mode: "builtin_with_optional_overrides"
+  allowed_auto_templates:
+    - "request_attachment_resume"
+    - "attachment_followup"
+    - "interview_intent_probe"
+    - "collect_availability"
+    - "confirm_interview_time"
+    - "send_feishu_schedule_link"
+    - "faq_role_intro"
+    - "faq_interview_process"
+  escalate_topics:
+    - "salary_negotiation"
+    - "benefits_exception"
+    - "complaint"
+    - "hostile_language"
+  allow_bounded_generation_for_unmapped_faq: true
+  generation_rules:
+    max_sentences: 4
+    keep_tone: "professional_warm"
+    must_not_request_private_contact: true
+    must_not_make_offer_promises: true
+feishu:
+  lobster_capability_required: true
+  create_todo_items: false
+  default_add_user_self: true
+  ask_once_for_extra_default_attendee: true
+  required_permissions:
+    - "calendar.event:create"
+    - "calendar.event:write"
+  extra_default_attendee:
+    enabled: false
+    open_id: ""
+    email: ""

@@ -1,0 +1,96 @@
+# Onboarding Flow
+
+## Goal
+
+Get a new Chinese-speaking recruiter from GitHub skill link to safe first-run automation with minimal setup.
+
+## Recommended First-Run Path
+
+### 1. Install the skill from GitHub
+
+The user gives Lobster the GitHub link to this skill.
+
+Lobster should:
+
+- Install the skill into the local Codex skills directory
+- Load the skill metadata from `SKILL.md` and `agents/openai.yaml`
+- Detect the example policy and template files in `assets/`
+- Detect a usable Chrome or Chromium browser
+- Use its own browser capability on the user's active browser session
+
+### 2. Start guided setup
+
+On first use, do not start browsing candidates immediately.
+
+Ask only the minimum required questions:
+
+1. Which BOSS job or JD should this automation use first?
+2. Which company hiring standard should apply?
+3. Should the default Chinese template pack be used as-is, or should specific templates be overridden?
+4. Should Feishu interview scheduling be enabled after time confirmation?
+5. Should the Feishu event add only the user, or also one specific extra attendee by default?
+
+If the user has not prepared policy files yet, start from the examples in `assets/`.
+
+## Minimum Setup Artifacts
+
+The first setup should produce or confirm these files:
+
+- `company-policy.yaml`
+- `approval-policy.yaml`
+- optional `message-templates.yaml`
+
+Recommended source files:
+
+- `assets/company-policy.example.yaml`
+- `assets/approval-policy.example.yaml`
+- `assets/message-templates.example.yaml`
+- `assets/default-message-templates.zh-CN.yaml`
+
+## Default Answers
+
+If the user wants the fastest path, Lobster should assume:
+
+- Use the selected JD as the first role policy seed
+- Use built-in Chinese templates
+- Enable attachment resume request automation
+- Enable interview scheduling after confirmed time
+- Add only the user to Feishu by default
+- Keep human review enabled for edge cases
+
+## First Safe Run Mode
+
+Recommend this launch sequence:
+
+1. `dry_run_review`
+Read candidates, classify them, and draft messages, but do not send anything.
+
+2. `guarded_send`
+After the user confirms the outputs look correct, allow automatic use of approved templates.
+
+3. `schedule_enabled`
+After Lobster has the required Feishu permission, allow creation of interview schedules for candidates whose time is confirmed.
+
+## What Lobster Should Do During Setup
+
+Lobster should help the user finish setup in this order:
+
+1. Detect whether the user is already logged into BOSS web
+2. Ask for the first target JD or role
+3. Materialize policy files from the example YAMLs
+4. Ask whether built-in Chinese templates are sufficient
+5. Ask whether Feishu should add one extra default attendee
+6. Ask Lobster to request the needed Feishu permissions if scheduling is enabled
+7. Start in dry-run mode on `inbound_chat` first
+8. Expand to `recommended_feed`
+9. Expand to `search_results` if the account has search rights
+
+## Why This Path Is Best
+
+This first-run path optimizes for:
+
+- Fast time to value
+- Low policy drift
+- Low BOSS risk
+- Low template configuration burden
+- Safe introduction of Lobster-driven Feishu scheduling

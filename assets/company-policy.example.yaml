@@ -1,0 +1,48 @@
+version: "1"
+company:
+  name: "Example Co"
+  timezone: "Asia/Shanghai"
+talent_principles:
+  required_traits:
+    - "ownership"
+    - "clear communication"
+    - "learning agility"
+  avoid_traits:
+    - "blame shifting"
+    - "unclear accountability"
+roles:
+  - role_id: "backend-engineer"
+    role_title: "Backend Engineer"
+    jd_summary: "Build and maintain core SaaS backend services."
+    must_have:
+      years_experience_min: 3
+      skills:
+        - "java"
+        - "spring boot"
+      cities:
+        - "Shanghai"
+      education_min: "bachelor"
+    preferred:
+      industries:
+        - "saas"
+        - "enterprise software"
+      companies:
+        - "high growth startup"
+      signals:
+        - "to_b"
+        - "microservices"
+        - "api design"
+    hard_reject:
+      missing_skills:
+        - "java"
+      excluded_backgrounds:
+        - "internship only"
+      max_job_changes_recent_years: 3
+    review_focus:
+      - "stability"
+      - "system design depth"
+      - "business ownership"
+    messaging:
+      attachment_resume_required_by_default: true
+      approved_salary_range_note: "30-45k x 14"
+      template_pack: "default-zh-cn"

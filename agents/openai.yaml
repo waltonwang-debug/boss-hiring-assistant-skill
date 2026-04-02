@@ -1,0 +1,4 @@
+interface:
+  display_name: "BOSS Hiring Assistant"
+  short_description: "Help with BOSS recruiting workflows and Feishu scheduling"
+  default_prompt: "Use $boss-hiring-assistant to screen BOSS Zhipin candidates, chat safely, and schedule Feishu interviews."
