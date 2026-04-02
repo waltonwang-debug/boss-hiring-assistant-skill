@@ -11,6 +11,8 @@ Use this skill to help Lobster run BOSS Zhipin recruiting workflows through the 
 
 This skill is a Boss-specific strategy pack. It is not a standalone program and it does not replace Lobster's general browser or Feishu capabilities.
 
+When the task is about BOSS Zhipin recruiting, this skill should take precedence over any generic browser skill. Do not default to a general browser workflow such as `browser-use` for BOSS pages unless this skill explicitly says a fallback is needed.
+
 ## Core Responsibilities
 
 Use this skill to provide:
@@ -32,6 +34,8 @@ Confirm:
 - the current page is a supported BOSS workflow page
 - Lobster has or can request the needed Feishu permission later if scheduling is enabled
 
+After login is confirmed, Lobster should first discover the user's live BOSS job postings and read the corresponding JD from the current account. Do not ask the user to manually type the role or JD unless automatic discovery fails or there are multiple plausible jobs that require user selection.
+
 2. Use the safest browser path available.
 Prefer:
 - visible page fields
@@ -40,6 +44,7 @@ Prefer:
 - sequential, observable steps instead of bursty multi-step automation
 
 Avoid heavy screenshot interpretation when the page can be read structurally.
+For BOSS pages, do not hand control to a generic browser skill by default. Apply the BOSS-specific execution rules in this skill first, and only use a generic browser fallback if the BOSS-specific path is blocked and the user still wants to continue.
 
 3. Keep BOSS behavior conservative.
 - reuse the user's normal logged-in browser session
@@ -50,7 +55,7 @@ Avoid heavy screenshot interpretation when the page can be read structurally.
 
 4. Decide with policy first.
 Load:
-- the target job JD
+- the target job JD discovered from the logged-in BOSS account when possible
 - [company-policy.example.yaml](./assets/company-policy.example.yaml) or the user's derived company policy
 - [approval-policy.example.yaml](./assets/approval-policy.example.yaml) or the user's derived approval policy
 

@@ -24,13 +24,18 @@ On first use, do not start browsing candidates immediately.
 
 Ask only the minimum required questions:
 
-1. Which BOSS job or JD should this automation use first?
-2. Which company hiring standard should apply?
-3. Should the default Chinese template pack be used as-is, or should specific templates be overridden?
-4. Should Feishu interview scheduling be enabled after time confirmation?
-5. Should the Feishu event add only the user, or also one specific extra attendee by default?
+1. Which company hiring standard should apply?
+2. Should the default Chinese template pack be used as-is, or should specific templates be overridden?
+3. Should Feishu interview scheduling be enabled after time confirmation?
+4. Should the Feishu event add only the user, or also one specific extra attendee by default?
 
 If the user has not prepared policy files yet, start from the examples in `assets/`.
+
+Before asking about a target role, Lobster should first inspect the logged-in BOSS account and discover the available live job postings plus their JDs. Only ask the user to choose or provide role details if:
+
+- there are multiple plausible jobs and the choice is ambiguous
+- the current account does not expose the JD clearly
+- the user wants to override the discovered job
 
 ## Minimum Setup Artifacts
 
@@ -51,7 +56,7 @@ Recommended source files:
 
 If the user wants the fastest path, Lobster should assume:
 
-- Use the selected JD as the first role policy seed
+- Use the auto-discovered live BOSS JD as the first role policy seed
 - Use built-in Chinese templates
 - Enable attachment resume request automation
 - Enable interview scheduling after confirmed time
@@ -76,14 +81,15 @@ After Lobster has the required Feishu permission, allow creation of interview sc
 Lobster should help the user finish setup in this order:
 
 1. Detect whether the user is already logged into BOSS web
-2. Ask for the first target JD or role
-3. Materialize policy files from the example YAMLs
-4. Ask whether built-in Chinese templates are sufficient
-5. Ask whether Feishu should add one extra default attendee
-6. Ask Lobster to request the needed Feishu permissions if scheduling is enabled
-7. Start in dry-run mode on `inbound_chat` first
-8. Expand to `recommended_feed`
-9. Expand to `search_results` if the account has search rights
+2. Discover the live BOSS jobs and read the matching JD from the current account
+3. Ask the user to choose only if there are multiple plausible jobs or discovery is ambiguous
+4. Materialize policy files from the example YAMLs
+5. Ask whether built-in Chinese templates are sufficient
+6. Ask whether Feishu should add one extra default attendee
+7. Ask Lobster to request the needed Feishu permissions if scheduling is enabled
+8. Start in dry-run mode on `inbound_chat` first
+9. Expand to `recommended_feed`
+10. Expand to `search_results` if the account has search rights
 
 ## Why This Path Is Best
 

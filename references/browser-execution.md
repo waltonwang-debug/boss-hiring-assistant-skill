@@ -4,6 +4,8 @@
 
 Use Lobster's existing browser capability on the user's real Chrome or Chromium session while minimizing the chance of triggering BOSS risk controls.
 
+If Lobster has both this skill and a generic browser skill, route BOSS recruiting tasks to this skill first. Do not let a generic browser skill choose the default execution plan for BOSS pages.
+
 ## Environment Checks
 
 Before doing anything on BOSS, Lobster should check:
@@ -105,3 +107,19 @@ The skill should treat BOSS as a high-sensitivity site.
 
 The goal is not to bypass anti-automation systems.
 The goal is to behave conservatively enough that Lobster can assist real recruiting work without creating obviously abnormal browser patterns.
+
+## Fallback Boundary
+
+Generic browser skills may exist in the environment, but for BOSS they should be treated only as a backup execution path.
+
+Use a generic browser fallback only when:
+
+- the BOSS-specific reading path cannot extract required information
+- a required click cannot be completed with the conservative BOSS strategy
+- the user still wants to proceed after the limitation is explained
+
+Even in fallback mode, keep:
+
+- one-candidate-at-a-time execution
+- low interaction density
+- immediate pause on verification or abnormal redirects

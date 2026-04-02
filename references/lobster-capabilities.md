@@ -2,6 +2,8 @@
 
 This skill assumes Lobster already has these general-purpose capabilities:
 
+When Lobster also has a generic browser skill such as `browser-use`, that generic skill should not become the default controller for BOSS recruiting tasks. This skill should override the generic route for BOSS pages because the pacing, extraction, and pause rules are site-specific.
+
 ## Browser capabilities
 
 - Use the user's normal logged-in Chrome session
@@ -9,6 +11,11 @@ This skill assumes Lobster already has these general-purpose capabilities:
 - Click low-risk controls when the skill explicitly asks for it
 
 This skill adds the BOSS-specific extraction strategy and pause rules. It does not replace Lobster's general browser automation layer.
+Fallback principle:
+
+- Use this skill first for all BOSS recruiting pages
+- Use a generic browser skill only as a fallback when this skill's BOSS-specific path cannot complete a required read or click
+- If a fallback is used, keep the same conservative pacing and pause conditions
 
 ## Feishu capabilities
 
