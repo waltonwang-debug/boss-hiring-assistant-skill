@@ -38,7 +38,7 @@
 只引导这些前置条件：
 
 1. 禁用或移除 `browser-use` 等浏览器 skill
-2. 安装 `web-access`
+2. 由龙虾代为安装 `web-access`
    - GitHub 链接：`https://github.com/eze-is/web-access`
 3. 切换到 `web-access`
 4. 验证 `web-access` 已接管
@@ -79,7 +79,10 @@
 
 ## 安装链接规则
 
-当需要用户安装 `web-access` 时，不要让龙虾自己去搜索。
+默认由龙虾代为安装 `web-access`。
+只有在龙虾代装失败时，才回退为让用户手动安装。
+
+当需要用户手动安装 `web-access` 时，不要让龙虾自己去搜索。
 直接向用户提供固定链接：
 
 - `https://github.com/eze-is/web-access`
