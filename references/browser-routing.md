@@ -4,11 +4,22 @@
 
 在 BOSS 页面中，所有浏览器访问统一只允许使用 `web-access`。
 
+`web-access` 安装来源固定为：
+
+- `https://github.com/eze-is/web-access`
+
+如果当前环境尚未安装 `web-access`，直接把这个链接给用户，不要自行重新联网搜索。
+
 允许的主路径顺序：
 
 1. `web-access` DOM 读取
 2. `web-access` CDP / eval
 3. `web-access` 低风险 click / read
+
+对于候选人列表页，DOM 读取不仅包括首屏读取，也包括在页面存在“还有更多项”信号时的受控增量读取。
+不要把首屏可见内容直接误认为完整列表。
+
+如果 `web-access` 无法确认列表是否已经完整读取，龙虾必须明确说明“当前结果可能只是部分列表”，而不是自行补全或强行断言完整。
 
 ## 禁止项
 
