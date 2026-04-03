@@ -1,144 +1,253 @@
 ---
 name: boss-hiring-assistant
-description: Assist BOSS Zhipin recruiting workflows with a web-first, policy-driven, human-in-the-loop skill. Use when Lobster needs to work on the BOSS Zhipin web app for inbound candidates, recommended candidates, or search-result candidates; extract structured resume information with low-risk browser access; classify candidates against a job JD and company hiring standards; chat with guarded Chinese templates; request attachment resumes; maintain BOSS-task memory; and ask Lobster to use its existing Feishu capability to create interview schedules after candidate intent and time are confirmed.
+description: 面向 BOSS 直聘招聘流程的中文技能包。用于通过真实 Chrome/Chromium 会话读取候选人、按 JD 和公司标准筛选、使用受控中文话术沟通，并在条件满足时通过飞书 bot 创建面试日程。
 ---
 
 # Boss Hiring Assistant
 
-## Overview
+## 概述
 
-Use this skill to help Lobster run BOSS Zhipin recruiting workflows through the user's real Chrome or Chromium browser session. Keep the workflow conservative, policy-driven, and human-in-the-loop.
+这个 skill 用来帮助龙虾在用户真实登录的 BOSS 直聘网页端上，按照保守、规则优先、可人工介入的方式完成招聘流程。
 
-This skill is a Boss-specific strategy pack. It is not a standalone program and it does not replace Lobster's general browser or Feishu capabilities.
+它是一个 **Boss 场景专用策略包**，不是独立程序，也不是通用浏览器平台。  
+它负责定义：
 
-## Mandatory First-Run Prerequisite
+- BOSS 页面读取和操作规则
+- 筛选与审批规则
+- 中文招聘话术边界
+- 固定的扫描/汇报节奏
+- 飞书 bot 接入边界
 
-Before any BOSS workflow starts, Lobster must treat the following as a blocking prerequisite:
+## 首次运行的阻断前提
 
-1. disable or remove currently installed browser-access skills that may take over the task, including but not limited to `browser-use`
-2. install `web-access` from `https://github.com/eze-is/web-access`
-3. switch this BOSS task onto `web-access`
-4. verify once that `web-access` is the active browser-access path for the task
+在任何 BOSS 招聘流程开始前，龙虾必须先完成以下阻断前提：
 
-If any of these steps fail, Lobster must stop and tell the user that the prerequisite is incomplete. Lobster must not continue into job discovery, candidate reading, messaging, or scheduling before this prerequisite is satisfied.
+1. 禁用或移除当前会抢占浏览器任务的浏览器访问 skill，包括但不限于 `browser-use`
+2. 安装 `web-access`：`https://github.com/eze-is/web-access`
+3. 把当前 Boss 任务切换到 `web-access`
+4. 做一次明确检查，确认 `web-access` 已经真正接管当前任务
 
-For Feishu scheduling, the integration path is also strict:
+如果这 4 步中任何一步失败，龙虾必须停止，并明确告诉用户前提未完成。  
+在前提完成前，不允许继续：
 
-- use the user's configured Feishu bot path
-- the user, not Lobster, must perform Feishu Open Platform setup
-- if the Feishu bot is not configured yet, stop and ask the user to create the bot in Feishu Open Platform, obtain `App ID` and `App Secret`, and then provide them to Lobster for local configuration
-- if the Feishu bot is already configured, call the bot with the required schedule-creation permission
-- if schedule creation fails because of missing permission, guide the user step by step to Feishu Open Platform to add the calendar permission, then retry through the same bot path
+- 读取岗位
+- 读取候选人
+- 发消息
+- 约面
+- 创建飞书日程
 
-For this Feishu setup path, Lobster must only provide instructions. Lobster must not open Feishu Open Platform pages, must not click through the setup flow, and must not attempt to complete platform configuration on the user's behalf.
+## 飞书接入硬约束
 
-Do not probe multiple Feishu integration methods. Do not try direct API, then OAuth, then web UI in sequence.
+飞书这部分只允许走 **飞书 bot 路径**：
 
-For BOSS Zhipin recruiting, the browser-access precondition is strict:
+- 用户自己去飞书开放平台创建应用或 bot
+- 用户自己拿到 `App ID` 和 `App Secret`
+- 用户把凭证交给龙虾
+- 龙虾完成本地配置并调用 bot
 
-- disable or remove already installed generic browser-access tools for this task, including `browser-use` and similar tools
-- install and use `web-access` as the browser-access tool for this task: `https://github.com/eze-is/web-access`
-- verify once that the switch has actually taken effect before touching any BOSS page
+如果 bot 还没配置，龙虾只能告诉用户该怎么做，**不能**：
 
-If this precondition is not satisfied, Lobster must stop and tell the user instead of continuing.
+- 代替用户打开飞书开放平台网页
+- 代替用户点击配置
+- 自己乱试 API / OAuth / 网页版多条路径
 
-## Core Responsibilities
+如果第一次创建日程时权限不足，龙虾应当：
 
-Use this skill to provide:
+1. 明确告诉用户要去飞书开放平台补什么权限
+2. 等用户手动补完
+3. 仍然沿同一个 bot 路径重试
 
-- BOSS-specific browser reading and pacing rules
-- BOSS-specific candidate source definitions
-- Job JD plus company-policy-driven screening
-- Fixed periodic screening and hourly reporting cadence
-- Human-review and approval boundaries
-- Default Chinese recruiting templates with optional overrides
-- BOSS-task memory structure
-- The contract for when Lobster should call its existing Feishu capability
+额外要求：
 
-This skill defines process constraints and capability contracts. If Lobster does not currently have a compatible `web-access`-backed browser capability that can satisfy these contracts, it must stop and tell the user. It must not improvise with unrelated browser-access methods.
+- 龙虾完成本地 bot 配置后，必须明确告诉用户去飞书 bot 聊天里让 bot 测试创建一个日程
+- 这个 bot 聊天中的授权流程，视为本 skill 的必经授权路径
+- 不能把“仅后台配置好应用”当作日历能力已可用的充分条件
 
-## Execution Rules
+## 默认运行规则
 
-1. Check environment first.
-Confirm:
-- a usable Chrome or Chromium browser exists
-- the user is logged into the BOSS web app
-- the current page is a supported BOSS workflow page
-- Lobster has or can request the needed Feishu permission later if scheduling is enabled
-- installed browser-access tools that would take over BOSS browsing, including `browser-use`, have been disabled or removed for this task
-- `web-access` is installed from `https://github.com/eze-is/web-access` and is the active browser-access tool for this task
-- the browser-access switch to `web-access` has been checked once and confirmed before continuing
+下面这些是 **默认规则，不是强制不可改规则**。  
+如果用户没有明确说自己的节奏，龙虾应先采用这些默认值；如果用户有自己的节奏，应按用户偏好覆盖：
 
-After login is confirmed, Lobster should first discover the user's live BOSS job postings and read the corresponding JD from the current account. Do not ask the user to manually type the role or JD unless automatic discovery fails or there are multiple plausible jobs that require user selection.
-During this job-discovery stage, do not preload chat-template references or other later-stage messaging materials. Load only the minimum browser and workflow context needed to inspect the logged-in BOSS account and discover the live job plus JD.
+- 工作时段：本地时间 `09:00-17:00`
+- 工作日：周一到周五
+- 扫描频率：每 `60` 分钟一次
+- 汇报频率：每 `60` 分钟一次
+- 汇报格式：按候选人分类分组，并附每个人的分类原因
+- 每次汇报都要问用户：
+  - 哪些候选人可以继续推进下一步沟通
+  - 哪些候选人可以进入约面推进
+- 每次汇报都要附上龙虾建议动作，例如索要附件简历或推进约面
 
-2. Use the safest browser path available.
-Prefer:
-- visible page fields
-- stable DOM extraction
-- low-risk interaction
-- sequential, observable steps instead of bursty multi-step automation
+## 核心职责
 
-Avoid heavy screenshot interpretation when the page can be read structurally.
-For BOSS pages, use `web-access` as the browser-access layer for this task. Do not hand control to `browser-use` or any other generic browser tool, and do not continue unless the precondition check confirms that `web-access` is now the active path.
-Do not freely switch among unrelated browser-access methods. Choose the `web-access` path for the current BOSS task and stay within it unless the skill explicitly requires a pause.
+这个 skill 负责提供：
 
-3. Keep BOSS behavior conservative.
-- reuse the user's normal logged-in browser session
-- do not export or import cookies
-- do not behave like a bursty bot
-- prefer one-candidate-at-a-time reading and progression
-- pause immediately on verification, login loss, risk prompts, or repeated extraction instability
+- BOSS 专属浏览器读取和操作规则
+- 候选人来源定义
+- JD + 公司招聘标准 + 审批规则驱动的筛选
+- 固定扫描与汇报节奏
+- 默认中文招聘模板和可选覆盖
+- BOSS 任务专属记忆模型
+- 飞书 bot 接入边界
 
-4. Decide with policy first.
-Load:
-- the target job JD discovered from the logged-in BOSS account when possible
-- [company-policy.example.yaml](./assets/company-policy.example.yaml) or the user's derived company policy
-- [approval-policy.example.yaml](./assets/approval-policy.example.yaml) or the user's derived approval policy
+如果龙虾当前没有满足要求的 `web-access` 能力，必须停，不允许自由发挥改用别的浏览器方式。
 
-Use rules first and only use model judgment for boundary cases.
+## 执行规则
 
-5. Advance with guarded messaging.
-Use the built-in Chinese templates by default. Allow the user to override only the templates they care about.
+### 1. 先检查环境
 
-6. Run on a fixed reporting cadence.
-By default, run screening only during 09:00 to 17:00 local time, scan candidate sources once per hour, and send the user one hourly summary. The hourly summary must:
+必须确认：
 
-- group candidates by classification outcome
-- include the reason for each classification
-- clearly ask the user which candidates may continue to the next chat step
-- clearly ask the user which candidates may proceed to interview scheduling once time is confirmed
-- include Lobster's recommendations, such as requesting an attachment resume or proposing interview progression
+- 本机有可用的 Chrome 或 Chromium
+- 用户已经登录 BOSS 网页端
+- 当前页面属于支持的 BOSS 页面
+- `browser-use` 等冲突浏览器 skill 已被禁用或移除
+- `web-access` 已安装并接管当前任务
+- 龙虾可在未来需要时请求飞书 bot 所需权限
 
-Do not continuously interrupt the user outside the configured summary cadence unless a pause condition or approval exception is triggered.
+登录确认后，龙虾应先自动读取当前账号下的在线岗位和 JD。  
+除非自动发现失败、岗位太多需要选择、或用户明确指定岗位，否则不要先让用户手动输入职位/JD。
 
-7. Keep BOSS-task memory.
-Maintain candidate state and action history in Lobster-managed local structured storage so the workflow can resume safely.
+岗位/JD 发现阶段：
 
-8. Use Lobster's configured Feishu bot path only.
-During onboarding, only decide whether Feishu scheduling is enabled. When interview time is first confirmed for a candidate, then check whether the Feishu bot is configured and ask the user about default attendees. If the bot is not configured, stop and tell the user the exact Feishu Open Platform steps they must perform manually, then wait for the user to return with `App ID` and `App Secret`. After Lobster configures the bot locally, Lobster must explicitly tell the user to go to the Feishu bot chat and ask the bot to test-create a calendar event there, so the user can complete the in-chat authorization flow. Treat that bot-chat authorization path as the required path for calendar scheduling in this task. If scheduling still fails because permission is missing, tell the user the exact permission steps they must perform manually and then retry through the same bot path only. Do not open Feishu setup pages or attempt the setup on the user's behalf. Do not try background-only permission setup as a substitute for the bot-chat authorization path.
+- 不要提前读取消息模板文档
+- 只加载最小必要的页面和流程上下文
 
-## Required Browser Primitives
+### 2. 统一走最安全的浏览器路径
 
-For BOSS recruiting tasks, Lobster should only proceed if it has browser capabilities equivalent to these primitives:
+优先顺序：
 
-- inspect the active browser tab
-- read visible DOM text from the current page
-- read the currently opened candidate detail panel or page
-- click a specific low-risk control when the skill explicitly calls for it
-- keep working on the same logged-in browser session
+- 可见页面字段
+- `web-access` DOM 读取
+- `web-access` CDP 读取
+- 只有结构化读取失败时才考虑截图兜底
 
-These primitives must be provided through `web-access` for this task. If Lobster cannot map `web-access` to these primitives, or cannot confirm that conflicting browser tools have been disabled for the task, it must stop and explain that the required browser capability contract is not available.
+禁止：
 
-For page reading, prefer `web-access` CDP or DOM APIs first. Do not use screenshots or image interpretation when `web-access` can read the page structurally. Screenshot-based reading is a last resort only after `web-access` structural access clearly fails.
+- 默认交给 `browser-use`
+- 页面还能结构化读取时就用截图/OCR
+- 在一个 Boss 任务里来回切换多套浏览器访问方式
 
-## Supported Candidate Sources
+### 3. 保持 Boss 操作保守
+
+- 复用用户的真实登录浏览器会话
+- 不导出/导入 cookie
+- 不表现得像高频机械脚本
+- 尽量一位候选人一位候选人推进
+- 遇到风控、登录失效、异常提示、重复提取不稳定时立即暂停
+
+### 4. 规则优先，模型只处理边界样本
+
+必须加载：
+
+- 自动发现到的目标 JD
+- `company-policy.yaml` 或示例策略
+- `approval-policy.yaml` 或示例审批策略
+
+先跑硬规则，再让模型处理边界样本。
+
+### 5. 用受控话术推进
+
+- 默认用内置中文模板
+- 用户只需要覆盖自己关心的模板
+- 常规消息发送必须走固定快路径
+- 不允许把单条消息发送当成开放式浏览器研究任务
+
+### 6. 按固定节奏扫描和汇报
+
+默认在工作时段内，每小时扫描一次并汇报一次。  
+每次汇报必须：
+
+- 按分类分组候选人
+- 写明分类原因
+- 写明建议下一步
+- 询问用户哪些候选人继续沟通
+- 询问用户哪些候选人进入约面推进
+
+除非触发暂停条件或审批异常，否则不要在汇报节奏之外频繁打扰用户。
+
+### 7. 维护 Boss 任务记忆
+
+龙虾需要维护：
+
+- 候选人状态
+- 上次决策
+- 动作历史
+- 是否已请求附件简历
+- 是否已确认面试时间
+- 是否已进入飞书建会流程
+- 上一次扫描和汇报时间
+
+### 8. 飞书只在真正需要建会时再细问
+
+onboarding 阶段只需要问：
+
+- 是否启用飞书约面
+
+以下内容都延后到第一次真的要创建日程时再确认：
+
+- 飞书 bot 是否已配置
+- `App ID` / `App Secret`
+- 默认参会人是否只加用户，还是加一个固定账号
+
+## 强约束动作
+
+下面这些动作必须走短时、主线程、固定路径，不允许开放式探索：
+
+- 打开候选人详情
+- 切换候选人线程
+- 打开聊天线程
+- 发送标准 BOSS 站内消息
+- 索要附件简历
+- 收集面试时间
+- 确认面试时间
+- 发送飞书日程链接
+
+统一规则：
+
+1. 先准备好最终 payload
+2. 尽量停留在当前页面/线程
+3. 只允许一次短时主线程 `web-access` 尝试
+4. 做一次直接成功检查
+5. 失败就进入可恢复暂停态，不继续长时间探索
+
+## Boss 站内消息发送固定方案
+
+当前已验证的稳定发送方案：
+
+1. 获取或复用目标 `candidate_id`
+2. 优先点击候选人项打开线程，而不是先做 URL 导航
+3. 用 `[contenteditable]` 定位输入框
+4. 写入消息文本
+5. 点击 `.submit`
+6. 优先用“输入框清空”作为成功判定
+7. 如有需要，再用“最新消息包含送达标记”做二级验证
+
+唯一允许的备用路径：
+
+- 对同一个输入框派发一次 Enter
+
+不允许继续扩展出更多发送变体，除非有新的真实成功样本支持。
+
+## 可恢复暂停态
+
+当强约束动作失败时，龙虾不是静默停住，而是进入 **可恢复暂停态**。
+
+暂停时必须告诉用户：
+
+- 哪一步失败了
+- 已经按短时快路径尝试过，没有继续乱试
+- 最可能原因是什么
+- 用户现在最小需要做什么
+- 做完后如何让龙虾继续
+
+## 支持的候选人来源
 
 - `inbound_chat`
 - `recommended_feed`
 - `search_results`
 
-## Decision Outcomes
+## 决策结果
 
 - `reject_hard`
 - `reject_soft`
@@ -146,45 +255,13 @@ For page reading, prefer `web-access` CDP or DOM APIs first. Do not use screensh
 - `approval_required`
 - `pass_to_chat`
 
-## Process States
+## 参考文档
 
-- `new`
-- `card_scanned`
-- `profile_opened`
-- `profile_extracted`
-- `decision_pending`
-- `attachment_requested`
-- `attachment_received`
-- `attachment_forwarded`
-- `interview_intent_checking`
-- `interview_intent_confirmed`
-- `time_slot_collecting`
-- `time_confirmed`
-- `feishu_event_created`
-- `schedule_link_sent`
-- `candidate_declined`
-- `no_response_followup`
-- `process_completed`
-- `process_paused`
-
-## Human Escalation
-
-Escalate when:
-
-- the candidate is valuable and a false negative would be costly
-- the evidence is incomplete or contradictory
-- compensation, level, location, or headcount needs an exception
-- the candidate asks something outside approved FAQ boundaries
-- BOSS shows any risk-control or verification interruption
-- Lobster does not yet have the required Feishu permission
-
-## References
-
-- Use [browser-execution.md](./references/browser-execution.md) for Chrome/Chromium checks, extraction order, selector guidance, and pacing rules.
-- Use [boss-workflow.md](./references/boss-workflow.md) for the recruiting state machine and progression logic.
-- Use [chat-templates.md](./references/chat-templates.md) for the template strategy.
-- Use [lobster-capabilities.md](./references/lobster-capabilities.md) for the boundary between this skill and Lobster's own browser and Feishu abilities.
-- Use [onboarding-flow.md](./references/onboarding-flow.md) for the first-run setup path.
-- Use [policy-schema.md](./references/policy-schema.md) for hiring policy and approval policy schemas.
-- Use [task-memory.md](./references/task-memory.md) for the BOSS-task memory model.
-- Use [trial-run.md](./references/trial-run.md) for the first real dry-run checklist.
+- [browser-execution.md](./references/browser-execution.md)：浏览器执行规则
+- [boss-workflow.md](./references/boss-workflow.md)：业务流程和状态机
+- [chat-templates.md](./references/chat-templates.md)：中文模板策略
+- [lobster-capabilities.md](./references/lobster-capabilities.md)：龙虾能力边界
+- [onboarding-flow.md](./references/onboarding-flow.md)：首次接入流程
+- [policy-schema.md](./references/policy-schema.md)：策略文件结构
+- [task-memory.md](./references/task-memory.md)：任务记忆模型
+- [trial-run.md](./references/trial-run.md)：真实试跑清单

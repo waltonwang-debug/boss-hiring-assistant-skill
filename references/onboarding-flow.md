@@ -1,156 +1,130 @@
-# Onboarding Flow
+# Onboarding 流程
 
-## Goal
+## 目标
 
-Get a new Chinese-speaking recruiter from GitHub skill link to safe first-run automation with minimal setup.
+让中文用户从 GitHub skill 链接出发，以最少配置进入第一次安全试跑。
 
-## Blocking Prerequisite
+## 阻断前提
 
-Before onboarding may continue, Lobster must complete this blocking prerequisite:
+在 onboarding 继续之前，龙虾必须先完成：
 
-1. tell the user that this BOSS task must use `web-access`
-2. disable or remove currently installed browser-access skills that may take over the task, including but not limited to `browser-use`
-3. install `web-access` from `https://github.com/eze-is/web-access`
-4. verify once that `web-access` is now the active browser-access path
+1. 告诉用户这个 Boss 任务必须使用 `web-access`
+2. 禁用或移除会抢占任务的浏览器访问 skill，包括但不限于 `browser-use`
+3. 安装 `web-access`
+4. 验证 `web-access` 已经接管当前任务
 
-Until this prerequisite is complete, Lobster must not continue to:
+在这一步完成前，龙虾不得继续：
 
-- discover BOSS jobs
-- read JDs
-- inspect candidates
-- load messaging templates
-- ask later business-setup questions
+- 发现岗位
+- 读取 JD
+- 读取候选人
+- 读取消息模板
+- 询问后续业务配置
 
-## Recommended First-Run Path
+## 推荐首次路径
 
-### 1. Install the skill from GitHub
+### 1. 安装 skill
 
-The user gives Lobster the GitHub link to this skill.
+用户把 GitHub skill 链接交给龙虾。
 
-Lobster should:
+龙虾应当：
 
-- Install the skill into the local Codex skills directory
-- Load the skill metadata from `SKILL.md` and `agents/openai.yaml`
-- Detect the example policy and template files in `assets/`
-- Detect a usable Chrome or Chromium browser
-- Tell the user that BOSS recruiting with this skill requires `web-access`
-- Tell the user to ask Lobster to delete or disable currently installed browser-access skills, including but not limited to `browser-use`
-- Give the user the `web-access` GitHub link: `https://github.com/eze-is/web-access`
-- Install `web-access`
-- Verify once that `web-access` is now the active browser-access path on the user's active browser session
+- 安装这个 skill
+- 读取 `SKILL.md` 和 `agents/openai.yaml`
+- 识别 `assets/` 里的示例配置文件
+- 检查本机是否有可用 Chrome/Chromium
+- 完成 `web-access` 的阻断前提
 
-### 2. Start guided setup
+### 2. 开始引导式设置
 
-On first use, do not start browsing candidates immediately.
+第一次使用时，不要马上浏览候选人。
 
-Ask only the minimum required questions:
+只问最少问题：
 
-0. Before any business setup question, complete the blocking prerequisite above
+1. 应该使用哪套公司招聘标准
+2. 是否使用默认中文模板，还是只覆盖少数模板
+3. 是否启用飞书约面
 
-1. Which company hiring standard should apply?
-2. Should the default Chinese template pack be used as-is, or should specific templates be overridden?
-3. Should Feishu interview scheduling be enabled after time confirmation?
+如果用户还没有准备策略文件，就从 `assets/` 里的示例文件生成。
 
-If the user has not prepared policy files yet, start from the examples in `assets/`.
+### 3. 自动发现岗位和 JD
 
-Before asking about a target role, Lobster should first inspect the logged-in BOSS account and discover the available live job postings plus their JDs. Only ask the user to choose or provide role details if:
+在问用户职位前，龙虾应先自动查看已登录 BOSS 账号里的在线岗位和对应 JD。
 
-- there are multiple plausible jobs and the choice is ambiguous
-- the current account does not expose the JD clearly
-- the user wants to override the discovered job
+只有在以下情况才问用户：
 
-At this discovery stage, do not load message-template references yet. Job discovery should stay narrow and only use the minimum browser and workflow context needed to inspect the logged-in BOSS account.
+- 在线岗位太多，无法明确该用哪个
+- 当前账号页面没暴露清晰 JD
+- 用户明确要覆盖自动发现的岗位
 
-## Minimum Setup Artifacts
+岗位发现阶段不要提前读消息模板文档。
 
-The first setup should produce or confirm these files:
+## 默认值
 
-- `company-policy.yaml`
-- `approval-policy.yaml`
-- optional `message-templates.yaml`
+如果用户没有明确说自己的节奏，龙虾应自动采用这些默认值：
 
-Recommended source files:
+- 使用自动发现的 JD 作为初始岗位策略种子
+- 使用内置中文模板
+- 启用附件简历请求
+- 启用飞书约面
+- 工作时段默认 `09:00-17:00`
+- 每 `60` 分钟扫描一次并汇报一次
+- 保留人工复核边界
 
-- `assets/company-policy.example.yaml`
-- `assets/approval-policy.example.yaml`
-- `assets/message-templates.example.yaml`
-- `assets/default-message-templates.zh-CN.yaml`
+这些都是 **默认值**，不是强制值。  
+如果用户有自己的工作时间、汇报节奏或审批节奏，龙虾应采用用户偏好。
 
-## Default Answers
+## 首次安全运行模式
 
-If the user wants the fastest path, Lobster should assume:
-
-- Use the auto-discovered live BOSS JD as the first role policy seed
-- Use built-in Chinese templates
-- Enable attachment resume request automation
-- Enable interview scheduling after confirmed time
-- Use the default active screening window of 09:00 to 17:00 local time
-- Scan and summarize once every 60 minutes
-- Add only the user to Feishu by default
-- Keep human review enabled for edge cases
-
-## First Safe Run Mode
-
-Recommend this launch sequence:
+推荐分三步：
 
 1. `dry_run_review`
-Read candidates, classify them, and draft messages, but do not send anything.
+只读取、分类、生成消息预览，不自动发送。
 
 2. `guarded_send`
-After the user confirms the outputs look correct, allow automatic use of approved templates.
+用户确认预览没问题后，再允许自动发已批准模板。
 
 3. `schedule_enabled`
-After Lobster has the required Feishu permission, allow creation of interview schedules for candidates whose time is confirmed.
+候选人确认时间后，再进入飞书建会流程。
 
-## What Lobster Should Do During Setup
+## 设置顺序
 
-Lobster should help the user finish setup in this order:
+龙虾应按以下顺序完成设置：
 
-1. Detect whether the user is already logged into BOSS web
-2. Complete the blocking prerequisite for `web-access`
-3. Verify that the minimum browser primitive contract is satisfied through `web-access`
-4. If either the tool switch or capability verification fails, stop and tell the user instead of continuing silently
-5. Discover the live BOSS jobs and read the matching JD from the current account
-6. Ask the user to choose only if there are multiple plausible jobs or discovery is ambiguous
-7. Materialize policy files from the example YAMLs
-8. Ask whether built-in Chinese templates are sufficient
-9. Start in dry-run mode on `inbound_chat` first
-10. Expand to `recommended_feed`
-11. Expand to `search_results` if the account has search rights
+1. 确认用户已登录 BOSS 网页
+2. 完成 `web-access` 阻断前提
+3. 验证 `web-access` 满足最低浏览器原语
+4. 如果能力或接管失败，立即停止并告知用户
+5. 自动发现在线岗位和 JD
+6. 仅在有歧义时才让用户选择岗位
+7. 生成或确认 `company-policy.yaml`
+8. 生成或确认 `approval-policy.yaml`
+9. 询问是否使用内置中文模板
+10. 先从 `inbound_chat` 试跑
+11. 再扩展到 `recommended_feed`
+12. 如账号有权限，再扩展到 `search_results`
 
-## Why This Path Is Best
+## 第一次创建飞书日程时
 
-This first-run path optimizes for:
+不要在 onboarding 阶段就追问飞书 bot 配置细节。
 
-- Fast time to value
-- Low policy drift
-- Low BOSS risk
-- Low template configuration burden
-- Safe introduction of Lobster-driven Feishu scheduling
+当第一个候选人真正确认面试时间后，龙虾才应当：
 
-## First Schedule Attempt
+1. 检查飞书 bot 是否已配置
+2. 询问默认参会人是只加用户还是额外加一个固定账号
+3. 如果 bot 未配置，告诉用户去飞书开放平台：
+   - 创建应用或 bot
+   - 拿到 `App ID` 和 `App Secret`
+   - 回来交给龙虾
+4. 龙虾完成本地 bot 配置
+5. 明确告诉用户去飞书 bot 聊天里让 bot 测试创建一个日程
+6. 通过 bot 聊天中的授权流程完成日历授权
+7. 然后才真正创建面试日程
+8. 如果仍缺权限，再引导用户回开放平台补权限，并沿同一路径重试
 
-Do not ask about Feishu bot configuration details during initial onboarding.
+重要边界：
 
-When the first candidate reaches confirmed interview time, then and only then Lobster should:
-
-1. check whether the user's Feishu bot is already configured for calendar scheduling
-2. ask whether the schedule should add only the user, or also one specific extra attendee by default
-3. if the bot is not configured, pause and instruct the user to:
-   go to Feishu Open Platform
-   create the bot or app
-   obtain `App ID` and `App Secret`
-   return those credentials to Lobster
-4. once the user provides `App ID` and `App Secret`, let Lobster finish local bot configuration
-5. explicitly tell the user to go to the Feishu bot chat and ask the bot to test-create a schedule there
-6. use that bot-chat interaction to complete the in-chat calendar authorization flow
-7. attempt schedule creation through the Feishu bot path only
-8. if schedule creation fails because the bot lacks calendar permission, guide the user step by step back to Feishu Open Platform to add the needed permission
-9. after the permission is added, retry through the same bot path only
-
-Important boundary:
-
-- Lobster must only describe these Feishu Open Platform steps
-- Lobster must not open the Feishu Open Platform website for the user
-- Lobster must not navigate the setup UI for the user
-- Lobster must wait for the user to complete the manual steps and return with the needed credentials or confirmation
+- 龙虾只能描述步骤
+- 龙虾不能替用户打开飞书开放平台
+- 龙虾不能代替用户点击配置
+- 龙虾必须等待用户手动完成这些步骤

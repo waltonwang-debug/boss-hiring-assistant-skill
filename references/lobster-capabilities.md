@@ -1,93 +1,91 @@
-# Lobster Capability Contract
+# 龙虾能力边界
 
-This skill assumes Lobster already has these general-purpose capabilities:
+## 总原则
 
-For BOSS recruiting tasks, Lobster must first tell the user that this task requires `web-access` and that conflicting browser-access skills must be removed or disabled first, including `browser-use` and similar tools. Then Lobster must install `web-access` from `https://github.com/eze-is/web-access`, switch the task onto it, and perform one explicit check that this switch has taken effect before touching any BOSS page.
+这个 skill 假设龙虾已经有一些通用能力，但在 Boss 任务里必须遵守本 skill 的场景边界。
 
-This is a blocking prerequisite. Lobster must not continue to any later BOSS workflow step until this prerequisite is complete.
+## 浏览器能力边界
 
-## Browser capabilities
+Boss 招聘任务中，龙虾必须：
 
-- Use the user's normal logged-in Chrome session
-- Read the active BOSS page
-- Click low-risk controls when the skill explicitly asks for it
-- Route BOSS browsing through `web-access` installed from `https://github.com/eze-is/web-access`
+1. 先告诉用户本任务必须使用 `web-access`
+2. 禁用或移除会抢任务的浏览器 skill，例如 `browser-use`
+3. 安装 `web-access`
+4. 切到 `web-access`
+5. 验证接管成功后再继续
 
-Minimum compatible browser primitive set:
+这一步是阻断式前提，没有完成就不能继续。
 
-- inspect the active tab
+### 浏览器最低原语
+
+龙虾必须具备以下等价能力：
+
+- inspect active tab
 - read visible DOM text
-- read the currently opened detail panel or page
+- read currently opened detail panel or page
 - click specific low-risk controls
 - remain in the same logged-in browser session
 
-This skill adds the BOSS-specific extraction strategy and pause rules. It does not replace Lobster's general browser automation layer, but for this task the compatible browser layer must be `web-access`.
-Activation principle:
+如果做不到，就必须停。
 
-- Disable or remove conflicting browser-access tools before the BOSS task starts
-- Tell the user to have Lobster delete or disable conflicting browser-access skills first, including `browser-use`
-- Install `web-access` from `https://github.com/eze-is/web-access`
-- Use `web-access` as the only browser-access tool for this BOSS task
-- Confirm once that `web-access` is the active browser path before continuing
-- If Lobster cannot prevent a conflicting browser tool from taking over a BOSS page, it should stop and tell the user immediately
-- If Lobster cannot satisfy the minimum browser primitive set through `web-access`, it should stop and tell the user immediately
+## 飞书能力边界
 
-## Feishu capabilities
+飞书这部分只允许使用 **已配置好的飞书 bot**。
 
-Lobster should request and use the user's configured Feishu bot capability for interview scheduling.
+### 单一路径原则
 
-This is a single approved path:
+- bot 已配置：直接用
+- bot 未配置：停下来，引导用户自己去开放平台配置
+- 禁止同时乱试 API / OAuth / 网页版
 
-- if the Feishu bot is already configured, use it directly
-- if the Feishu bot is not configured, stop and guide the user through bot configuration first
-- do not explore multiple Feishu paths speculatively
-- do not try API, then OAuth, then browser or web UI in sequence
-
-Required permissions:
+### 需要的权限
 
 - `calendar.event:create`
 - `calendar.event:write`
 
-This skill provides:
+### 本 skill 提供什么
 
-- When to create the interview event
-- Which attendees should be added by default
-- The event title, time, and description payload
+- 什么时候该建面试日程
+- 参会人默认逻辑
+- 日程标题、时间、描述 payload
 
-Lobster remains responsible for:
+### 龙虾负责什么
 
-- Requesting the permissions from the user
-- Using the existing configured Feishu bot connection
-- Creating the event and returning the join link
+- 告诉用户缺什么
+- 接收用户给的 `App ID` 和 `App Secret`
+- 完成本地 bot 配置
+- 调用 bot 创建日程并返回链接
 
-User remains responsible for:
+### 用户负责什么
 
-- Going to Feishu Open Platform
-- Creating the bot or app there
-- Obtaining `App ID` and `App Secret`
-- Giving those credentials to Lobster so Lobster can finish local configuration
-- Adding missing calendar permissions in Feishu Open Platform when Lobster reports that permission is insufficient
-- Going into the Feishu bot chat and completing the in-chat calendar authorization flow when Lobster asks for the first schedule test
+- 自己去飞书开放平台
+- 自己创建应用或 bot
+- 自己拿到 `App ID` 和 `App Secret`
+- 交给龙虾配置
+- 当龙虾提示权限不足时，自己回开放平台补权限
+- 当龙虾要求做第一次日程测试时，自己去飞书 bot 聊天里完成授权
 
-Lobster must not attempt to create or configure the Feishu bot on the user's behalf inside Feishu Open Platform.
-Lobster must not open Feishu Open Platform pages, must not navigate the setup UI for the user, and must not click through the configuration flow. Lobster may only explain the steps and wait for the user to complete them manually.
+### 明确禁止
 
-Feishu scheduling rule for this skill:
+龙虾不得：
 
-- after Lobster receives `App ID` and `App Secret`, Lobster may finish local bot configuration
-- then Lobster must explicitly instruct the user to go to the Feishu bot chat and ask the bot to test-create a calendar event
-- use that bot-chat interaction to complete the required user authorization path for calendar scheduling
-- do not treat Open Platform background configuration alone as sufficient for first successful calendar scheduling
+- 替用户打开飞书开放平台网页
+- 替用户在开放平台点配置
+- 替用户创建 bot
+- 替用户完成开放平台配置流程
 
-## Memory boundary
+龙虾只能描述步骤，等待用户手动完成。
 
-Lobster's generic memory is not assumed to be sufficient for this workflow.
+## 任务记忆边界
 
-This skill therefore keeps its own BOSS-task state in local SQLite for:
+龙虾的通用记忆不足以承载这个长流程任务，所以本 skill 要求维护 Boss 任务专属记忆。
 
-- candidate discovery
-- process state
-- decision state
-- action history
+这部分只应覆盖：
 
-This is task memory, not a replacement for Lobster's broader memory system. Lobster may implement it in SQLite, JSON, or any equivalent local structured store.
+- 候选人发现
+- 流程状态
+- 决策状态
+- 动作历史
+- 汇报节奏状态
+
+它是 **任务记忆**，不是通用 CRM，也不是替代龙虾整体记忆系统。

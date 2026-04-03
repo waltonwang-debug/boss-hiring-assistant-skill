@@ -1,75 +1,72 @@
-# Trial Run
+# 真实试跑清单
 
-## Goal
+## 目标
 
-Run a safe first real-world test after the skill is installed from GitHub.
+在 skill 安装完成后，做一次安全、低风险、可观察的真实试跑。
 
-## Suggested Order
+## 推荐顺序
 
-1. Ask the user to open and log into the BOSS web app in Chrome
-2. Confirm Lobster can access the active browser session
-3. Start with one target JD
-4. Load or create the company policy and approval policy
-5. Use default Chinese templates unless the user explicitly wants overrides
-6. Start with `inbound_chat` or a small subset of `recommended_feed`
-7. Run in dry-run mode first
-8. Show:
-- extracted candidate summary
-- decision result
-- message preview
-- Feishu bot schedule request preview, if applicable
-9. Only after the user confirms the previews, allow automatic message sending
+1. 让用户在 Chrome 中打开并登录 BOSS 网页端
+2. 确认龙虾已通过 `web-access` 接管当前浏览器
+3. 从一个岗位 JD 开始
+4. 加载或生成公司策略和审批策略
+5. 默认使用内置中文模板
+6. 先从 `inbound_chat` 或少量 `recommended_feed` 开始
+7. 先跑 `dry-run`
+8. 给用户展示：
+   - 候选人摘要
+   - 分类结果
+   - 消息预览
+   - 若适用，飞书 bot 建会请求预览
+9. 用户确认后，再允许自动发送消息
 
-## What To Verify
+## 需要验证的点
 
-- candidate source is identified correctly
-- profile extraction is structurally correct
-- decisions align with the user's hiring standard
-- message tone is acceptable
-- Feishu attendee defaults are correct
+- 候选人来源识别是否正确
+- 简历提取是否结构化稳定
+- 决策是否符合用户招聘标准
+- 话术是否自然且可接受
+- 飞书参会人默认逻辑是否正确
 
-## Dry-Run Success Criteria
+## `dry-run` 成功标准
 
-The first test is successful if:
+如果第一次试跑满足这些条件，就算成功：
 
-- Lobster can read candidates from the target BOSS page
-- Lobster can classify them consistently
-- Lobster can draft the next message correctly
-- Lobster can prepare the Feishu capability request when time is confirmed
-- Lobster pauses instead of guessing when the page enters a risky state
+- 龙虾能稳定读取目标 Boss 页面候选人
+- 龙虾能稳定分类
+- 龙虾能正确生成下一步消息
+- 候选人确认时间后，龙虾能准备飞书 bot 建会请求
+- 页面异常时，龙虾会暂停而不是乱猜
 
-## Recovery Checklist
+## 恢复清单
 
-If the first run fails, check these in order:
+### 1. BOSS 登录状态
 
-1. BOSS login state
-- confirm the user is still logged into the BOSS web app
-- confirm the page is not stuck on a login or verification screen
+- 确认用户仍然登录
+- 确认页面没卡在登录或验证页
 
-2. Page stability
-- confirm Lobster is reading the expected BOSS page
-- confirm the candidate detail is already visible before asking Lobster to extract more deeply
-- retry with a single candidate rather than a larger batch
+### 2. 页面稳定性
 
-3. Risk-control interruption
-- if BOSS shows verification, pause immediately
-- let the user solve the interruption manually
-- resume only after the page is back to a normal recruiting state
+- 确认龙虾读的是目标 Boss 页面
+- 确认候选人详情已打开，再做深入提取
+- 先缩小到单个候选人测试，不要一开始就测很多人
 
-4. Feishu capability
-- if no candidate has reached confirmed interview time yet, do not force Feishu bot configuration during onboarding
-- when the first schedule is actually needed, confirm the Feishu bot is already configured
-- when the first schedule is actually needed, confirm the default attendee choice then instead of during onboarding
-- if the bot is not configured, ask the user to create it in Feishu Open Platform and provide `App ID` plus `App Secret`
-- after Lobster configures the bot locally, explicitly ask the user to go to the Feishu bot chat and test-create a schedule there
-- use that bot-chat interaction to complete the needed user authorization flow
-- then confirm Lobster has the required Feishu bot permissions
-- confirm the default attendee settings are correct
-- generate the Feishu bot schedule request preview before executing
-- do not retry by switching to API, OAuth, or web UI paths
-- if the bot lacks calendar permission, guide the user back to Feishu Open Platform to add it, then retry through the same bot path
-- do not open Feishu Open Platform pages on the user's behalf during this process
+### 3. 风控中断
 
-5. Policy mismatch
-- confirm the selected role policy actually matches the current JD
-- confirm salary note, template mode, and approval thresholds are not too strict
+- 如果出现验证，立刻暂停
+- 用户手动处理后再继续
+
+### 4. 飞书 bot
+
+- 如果还没到“确认面试时间”阶段，就不要强行在 onboarding 里配置飞书
+- 真正需要建会时，再确认 bot 是否已配置
+- bot 未配置时，让用户去开放平台创建并给出 `App ID` / `App Secret`
+- 龙虾完成本地配置后，明确要求用户去飞书 bot 聊天中测试创建日程
+- 通过 bot 聊天完成授权
+- 缺权限时，引导用户回开放平台补权限，再沿同一路径重试
+- 过程中不得切换到 API/OAuth/网页等其他路径
+
+### 5. 策略不匹配
+
+- 确认当前岗位策略确实匹配当前 JD
+- 确认薪资说明、审批阈值、模板模式没有设得过于严格

@@ -1,4 +1,4 @@
 interface:
-  display_name: "BOSS Hiring Assistant"
-  short_description: "Help with BOSS recruiting workflows and Feishu scheduling"
-  default_prompt: "Use $boss-hiring-assistant to screen BOSS Zhipin candidates, chat safely, and schedule Feishu interviews."
+  display_name: "Boss 招聘助手"
+  short_description: "帮助完成 BOSS 招聘筛选、站内沟通与飞书约面"
+  default_prompt: "Use $boss-hiring-assistant 来执行 BOSS 直聘招聘流程，包括筛选候选人、受控站内沟通和飞书 bot 约面。若用户没有指定自己的节奏，则默认工作时段为本地时间 09:00-17:00、每 60 分钟扫描一次、每 60 分钟汇报一次，并在每次汇报中按分类总结候选人、说明分类原因、给出建议下一步，并询问哪些候选人继续沟通、哪些候选人进入约面推进。若用户有自己的时间或汇报节奏，则采用用户偏好。"

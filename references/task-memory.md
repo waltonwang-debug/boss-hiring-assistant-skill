@@ -1,20 +1,20 @@
-# Task Memory
+# 任务记忆模型
 
-## Purpose
+## 目的
 
-Keep BOSS recruiting task state separately from Lobster's broader memory because this workflow is long-running and stateful.
+Boss 招聘流程是长流程任务，不能只依赖龙虾通用记忆，所以需要单独维护任务记忆。
 
-## Storage Expectation
+## 存储要求
 
-Lobster should maintain a small local store for this skill. It may use:
+龙虾应维护一个轻量本地结构化存储，可以是：
 
-- local SQLite
-- local JSON files
-- any equivalent local structured store
+- 本地 SQLite
+- 本地 JSON
+- 其他等价的本地结构化存储
 
-The user should not need to install or manage a database manually.
+用户不需要手动安装或管理数据库。
 
-## Minimum Candidate Record
+## 最小候选人记录
 
 ```json
 {
@@ -32,7 +32,7 @@ The user should not need to install or manage a database manually.
 }
 ```
 
-## Minimum Action Record
+## 最小动作记录
 
 ```json
 {
@@ -46,24 +46,24 @@ The user should not need to install or manage a database manually.
 }
 ```
 
-## Required Memory Dimensions
+## 必须记住的维度
 
-- candidate source
-- current process state
-- last decision
-- action history
-- last hourly summary inclusion state
-- pending user confirmation for next chat step
-- pending user confirmation for interview progression
-- whether attachment resume was requested
-- whether attachment resume was received
-- whether interview intent was confirmed
-- whether interview time was confirmed
-- whether a Feishu schedule request was already sent to Lobster
+- 候选人来源
+- 当前流程状态
+- 上次决策
+- 动作历史
+- 上次是否已经进入小时汇报
+- 是否等待用户确认下一步沟通
+- 是否等待用户确认进入约面
+- 是否已请求附件简历
+- 是否已收到附件简历
+- 是否已确认面试意向
+- 是否已确认面试时间
+- 是否已生成飞书建会请求
 
-## Reporting Cadence Memory
+## 汇报节奏状态
 
-The task store should also keep a small reporting state, for example:
+还应保存汇报节奏状态，例如：
 
 ```json
 {
@@ -78,8 +78,9 @@ The task store should also keep a small reporting state, for example:
 }
 ```
 
-This lets Lobster avoid repeated summary spam and keeps the hourly review cycle stable.
+这样可以避免重复汇报、漏汇报，以及节奏漂移。
 
-## Retention Principle
+## 保留原则
 
-Keep enough history to avoid duplicate outreach and lost state, but do not turn this into a general CRM.
+保留足够多的状态，防止重复触达和状态丢失；  
+但不要把这部分扩展成通用 CRM。

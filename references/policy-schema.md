@@ -1,21 +1,21 @@
-# Policy Schema
+# 策略文件结构
 
-Use two YAML files:
+本 skill 使用两份 YAML：
 
 - `company-policy.yaml`
 - `approval-policy.yaml`
 
-The examples in `assets/` are the recommended starting point.
+`assets/` 里的示例文件是推荐起点。
 
 ## `company-policy.yaml`
 
-Purpose:
+用途：
 
-- Encode stable hiring standards that should not drift with the model
-- Define role-independent company talent principles
-- Define role-specific hard requirements and preferred signals
+- 固化不会随模型漂移的招聘标准
+- 定义公司层面的人才观
+- 定义岗位层面的硬条件和偏好信号
 
-Recommended shape:
+推荐结构：
 
 ```yaml
 version: "1"
@@ -64,26 +64,25 @@ roles:
       template_pack: "default-zh-cn"
 ```
 
-Field guidance:
+字段说明：
 
-- `talent_principles.required_traits`: soft standards that should influence screening and interview planning
-- `roles[].must_have`: hard entry conditions
-- `roles[].preferred`: positive ranking signals
-- `roles[].hard_reject`: direct elimination criteria
-- `roles[].review_focus`: points to verify in human review or interview
-- `roles[].messaging`: bounded facts that may appear in chat templates
-- `roles[].messaging.template_pack`: choose a built-in template pack or a user-defined pack name
+- `talent_principles.required_traits`：软性人才标准
+- `roles[].must_have`：硬门槛
+- `roles[].preferred`：加分信号
+- `roles[].hard_reject`：直接淘汰条件
+- `roles[].review_focus`：人工复核或面试重点
+- `roles[].messaging`：聊天里允许使用的有限事实
 
 ## `approval-policy.yaml`
 
-Purpose:
+用途：
 
-- Decide what may be automated
-- Decide what requires approval
-- Decide what must be reviewed manually
-- Control Feishu scheduling defaults
+- 定义哪些动作可以自动执行
+- 定义哪些动作必须审批
+- 定义哪些情况必须人工复核
+- 定义汇报节奏和飞书日程默认逻辑
 
-Recommended shape:
+推荐结构：
 
 ```yaml
 version: "1"
@@ -92,73 +91,43 @@ automation:
   allow_auto_pass_to_chat: true
   allow_auto_request_attachment: true
   allow_auto_schedule_feishu_interview: true
+reporting_window:
+  enabled: true
+  local_timezone: "Asia/Shanghai"
+  active_days:
+    - "monday"
+    - "tuesday"
+    - "wednesday"
+    - "thursday"
+    - "friday"
+  start_time: "09:00"
+  end_time: "17:00"
+reporting:
+  scan_interval_minutes: 60
+  summary_interval_minutes: 60
+  summary_format: "group_by_decision_with_reasons"
+  include_recommended_next_step: true
+  ask_user_to_confirm_chat_progression: true
+  ask_user_to_confirm_interview_progression: true
 thresholds:
   auto_pass_min_score: 0.82
   auto_pass_min_confidence: 0.80
   human_review_score_floor: 0.55
-  approval_required_for:
-    - "salary_exception"
-    - "level_exception"
-    - "location_exception"
-    - "headcount_exception"
-  always_review_for:
-    - "high_value_candidate"
-    - "contradictory_resume"
-    - "sparse_evidence"
-chat_policy:
-  template_mode: "builtin_with_optional_overrides"
-  allowed_auto_templates:
-    - "request_attachment_resume"
-    - "attachment_followup"
-    - "interview_intent_probe"
-    - "collect_availability"
-    - "confirm_interview_time"
-    - "send_feishu_schedule_link"
-    - "faq_role_intro"
-    - "faq_interview_process"
-  escalate_topics:
-    - "salary_negotiation"
-    - "benefits_exception"
-    - "complaint"
-    - "hostile_language"
-  allow_bounded_generation_for_unmapped_faq: true
-  generation_rules:
-    max_sentences: 4
-    keep_tone: "professional_warm"
-    must_not_request_private_contact: true
-    must_not_make_offer_promises: true
-feishu:
-  lobster_capability_required: true
-  create_todo_items: false
-  default_add_user_self: true
-  ask_once_for_extra_default_attendee: true
-  required_permissions:
-    - "calendar.event:create"
-    - "calendar.event:write"
-  extra_default_attendee:
-    enabled: false
-    open_id: ""
-    email: ""
 ```
 
-Field guidance:
+字段说明：
 
-- `automation.allow_auto_schedule_feishu_interview`: enable only after the user is comfortable with the workflow
-- `thresholds.auto_pass_*`: control when the skill may proceed without approval
-- `thresholds.always_review_for`: protect against costly false negatives
-- `chat_policy.template_mode`: recommended value is `builtin_with_optional_overrides`
-- `chat_policy.allowed_auto_templates`: hard allowlist for automatic messages
-- `chat_policy.allow_bounded_generation_for_unmapped_faq`: allow short controlled replies only for low-risk questions that do not map to a fixed template
-- `chat_policy.generation_rules`: constraints for any fallback generation path
-- `feishu.lobster_capability_required`: require Lobster's existing Feishu capability instead of a separate client inside this skill
-- `feishu.default_add_user_self`: always keep enabled in this version
-- `feishu.ask_once_for_extra_default_attendee`: ask the user once during onboarding, not on every candidate
-- `feishu.required_permissions`: the Feishu permissions Lobster should request from the user
-- `feishu.extra_default_attendee`: store one default extra attendee if the user requests it
+- `reporting_window`：默认运行时段，用户可覆盖
+- `reporting`：扫描和汇报节奏
+- `thresholds.auto_pass_*`：自动推进阈值
+- `approval_required_for`：哪些异常必须审批
+- `always_review_for`：哪些高风险情况必须人工复核
+- `chat_policy`：自动消息范围和生成边界
+- `feishu`：飞书 bot 相关默认逻辑
 
-## Decision Contract
+## 决策结果格式
 
-Every candidate decision should be serializable into:
+每个候选人的决策都应可序列化为：
 
 ```json
 {
@@ -177,15 +146,12 @@ Every candidate decision should be serializable into:
 }
 ```
 
-## Onboarding Questions
+## onboarding 需要采集的值
 
-During setup, gather these values before enabling automation:
+在开启自动化之前，至少要明确：
 
-1. Which role policy should apply to each BOSS job?
-2. Which message templates are approved for automatic use?
-3. Should Feishu scheduling be automatic after a confirmed time?
-4. Should the user's own Feishu account be the only default attendee?
-5. If not, which one extra Feishu attendee should be added by default?
-6. Should the built-in message templates be used as-is, or should specific templates be overridden?
-
-Keep onboarding concise and store the answers in the policy files.
+1. 当前岗位用哪套岗位策略
+2. 哪些模板允许自动发送
+3. 是否启用飞书约面
+4. 用户是否要覆盖默认扫描/汇报节奏
+5. 是否使用内置模板还是覆盖部分模板

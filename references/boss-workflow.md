@@ -1,139 +1,95 @@
-# BOSS Hiring Workflow
+# BOSS 招聘流程
 
-## Scope
+## 适用范围
 
-This skill supports the BOSS Zhipin web app only. It does not assume desktop client automation.
+本 skill 只支持 BOSS 直聘网页端，不假设桌面客户端自动化。
 
-Primary business actions:
+主要业务动作：
 
-1. Read candidates from `inbound_chat`, `recommended_feed`, and `search_results`
-2. Open the candidate profile and extract a structured profile
-3. Classify the candidate against the JD and company policy
-4. Continue with one of:
-- reject
-- human review
-- approval request
-- guarded chat progression
-5. Request an attachment resume when needed
-6. Ask Lobster to create a Feishu interview event after candidate intent and time are confirmed
-7. Send the Feishu event link back in the BOSS chat
+1. 从 `inbound_chat`、`recommended_feed`、`search_results` 读取候选人
+2. 打开候选人详情并提取结构化信息
+3. 按 JD 和公司策略做分类
+4. 根据分类进入：
+   - reject
+   - human review
+   - approval request
+   - guarded chat progression
+5. 需要时索要附件简历
+6. 候选人确认时间后通过飞书 bot 创建日程
+7. 把飞书日程链接回发给候选人
 
-## Default Operating Cadence
+## 默认运行节奏
 
-Use a fixed cadence unless the user changes it:
+默认节奏如下，用户可覆盖：
 
-- active screening window: 09:00 to 17:00 local time
-- screening cycle: once every hour
-- summary cycle: once every hour
+- 工作时段：`09:00-17:00`
+- 工作日：周一到周五
+- 每 `60` 分钟扫描一次
+- 每 `60` 分钟汇报一次
 
-Within each hourly cycle, Lobster should:
+每个小时周期内，龙虾应：
 
-1. scan the supported candidate sources
-2. update candidate classifications and reasons
-3. prepare one consolidated summary for the user
-4. ask which candidates may continue to the next communication step
-5. ask which candidates may proceed toward interview scheduling
+1. 扫描候选人来源
+2. 更新分类和原因
+3. 生成一份汇总给用户
+4. 询问哪些候选人继续推进沟通
+5. 询问哪些候选人进入约面推进
 
-Outside the active screening window, do not continue scheduled scanning unless the user explicitly overrides the default.
-
-## Candidate Sources
+## 候选人来源
 
 ### `inbound_chat`
 
-Candidates who have already entered the recruiting chat list through direct delivery or direct contact.
+已进入聊天列表的候选人。
 
-Recommended handling:
+特点：
 
-- Highest priority for MVP
-- Safest source for automation
-- Read the candidate card before opening full details
+- MVP 最优先
+- 风险最低
+- 最适合先跑通
 
 ### `recommended_feed`
 
-Candidates recommended by BOSS based on the account, behavior, and open roles.
+Boss 根据账号和岗位推荐的候选人。
 
-Recommended handling:
+特点：
 
-- No business-side total browsing cap
-- Keep operational pacing controlled
-- Open only promising profiles instead of rapidly opening every card
+- 不设业务总量上限
+- 但操作节奏必须保守
+- 不要机械地每个都快速打开
 
 ### `search_results`
 
-Candidates returned by BOSS search when the account has the required paid search rights.
+账号具备搜索权益时的搜索结果。
 
-Recommended handling:
+特点：
 
-- Use explicit filters tied to the role
-- Treat search as a higher-intent sourcing flow
-- Apply the same policy pack as other sources
+- 需要更明确的筛选条件
+- 仍然使用相同 policy pack
 
-## Extraction Strategy
+## 信息提取策略
 
-Use this extraction order:
+顺序如下：
 
-1. Visible card fields
-2. In-page DOM extraction through Lobster's browser reading capability
-3. Light CDP evaluation if DOM access is insufficient
-4. Visual fallback only if structured access fails
+1. 读卡片可见字段
+2. DOM 结构化提取
+3. 必要时再用轻量 CDP
+4. 只有结构化失败时才允许视觉兜底
 
-Extract the candidate profile into this shape:
+## 决策流程
 
-```json
-{
-  "candidate_id": "boss_xxx",
-  "source": "recommended_feed",
-  "basic_info": {
-    "city": "Shanghai",
-    "education": "Bachelor",
-    "years_of_experience": 5,
-    "work_status": "open_to_opportunities"
-  },
-  "target_info": {
-    "target_role": "Backend Engineer",
-    "target_city": "Shanghai",
-    "target_salary_range": "30-45k"
-  },
-  "career_history": [
-    {
-      "company": "Example Inc",
-      "title": "Senior Engineer",
-      "period": "2022-01 to present",
-      "industry": "SaaS"
-    }
-  ],
-  "evidence_tags": [
-    "java",
-    "microservices",
-    "to_b",
-    "team_lead"
-  ],
-  "risk_signals": [
-    "job_hopping"
-  ],
-  "chat_context": {
-    "has_chat_thread": true,
-    "has_attachment_resume": false,
-    "last_message_direction": "candidate"
-  }
-}
-```
+### 规则优先
 
-## Decision Flow
+先跑硬规则：
 
-### Rule-first pass
+- 必要技能缺失
+- 命中硬淘汰条件
+- 薪资越界
+- 地点越界
+- 职级越界
 
-Run hard rules before the model:
+### 模型辅助
 
-- Must-have skill missing
-- Hard reject condition hit
-- Salary mismatch beyond allowed range
-- Location mismatch beyond allowed rule
-- Level mismatch beyond allowed rule
-
-### Model-assisted pass
-
-Use the model only for boundary cases. Require:
+只处理边界样本，并要求输出：
 
 - `decision`
 - `score`
@@ -142,7 +98,7 @@ Use the model only for boundary cases. Require:
 - `risk_tags`
 - `next_action`
 
-Allowed decisions:
+允许的决策：
 
 - `reject_hard`
 - `reject_soft`
@@ -150,9 +106,9 @@ Allowed decisions:
 - `approval_required`
 - `pass_to_chat`
 
-## Hourly Summary Format
+## 每小时汇报格式
 
-The default summary should be grouped by candidate decision:
+默认按分类分组：
 
 - `pass_to_chat`
 - `approval_required`
@@ -160,22 +116,20 @@ The default summary should be grouped by candidate decision:
 - `reject_soft`
 - `reject_hard`
 
-For each candidate, include:
+每位候选人应包含：
 
-- candidate name or stable identifier
-- source
-- current decision
-- concise reasons for the decision
-- Lobster's recommended next step
+- 姓名或稳定 ID
+- 来源
+- 当前分类
+- 简短分类原因
+- 龙虾建议的下一步
 
-The summary should end with two explicit decision requests to the user:
+汇报结尾必须明确问用户两件事：
 
-1. which candidates may continue to the next communication step, such as requesting an attachment resume
-2. which candidates may proceed to interview scheduling after time confirmation
+1. 哪些候选人可以继续推进沟通，例如索要附件简历
+2. 哪些候选人可以进入约面推进
 
-If Lobster has a clear recommendation, include it next to the candidate instead of silently waiting for the user to infer the next step.
-
-## Process State Machine
+## 状态机
 
 ```text
 new
@@ -195,8 +149,6 @@ pass_to_chat
 -> attachment_requested
 -> attachment_received
 -> attachment_forwarded
--> feishu_review_requested
--> feishu_review_done
 -> interview_intent_checking
 -> interview_intent_confirmed
 -> time_slot_collecting
@@ -206,88 +158,104 @@ pass_to_chat
 -> process_completed
 ```
 
-## Chat Progression
+## 聊天推进
 
-### 1. Request attachment resume
+### 1. 索要附件简历
 
-Use when:
+适用场景：
 
-- The visible profile lacks enough evidence
-- The user wants internal review
-- The candidate is promising but details are incomplete
+- 可见简历信息不足
+- 用户想做内部复核
+- 候选人有潜力但证据不够
 
-Goal:
+### 2. 确认面试意向
 
-- Request a PDF attachment resume
-- Avoid asking for private contact details by default
+只有在以下情况下才推进：
 
-### 2. Internal review sync
+- 自动通过
+- 或用户明确批准进入面试
 
-After the attachment is received:
+### 3. 收集时间
 
-- Send the candidate packet to the user's own Feishu account
-- Wait for the user's internal decision if review is required
+先收可用时间，再确认具体时间。
 
-### 3. Confirm interview intent
+### 4. 发送飞书日程链接
 
-Use only after:
+只有飞书日程创建成功后才发送。
 
-- The candidate passes automatically
-- Or the user marks the candidate as approved for interview
+## 消息发送快速路径
 
-### 4. Collect time availability
+单条 Boss 消息发送固定按下列步骤：
 
-Ask for availability first. Confirm the exact time before creating the Feishu event.
+1. 先准备最终消息文本
+2. 停留在目标候选人线程
+3. 优先点击候选人项打开线程
+4. 使用 `[contenteditable]` 写入消息
+5. 点击 `.submit`
+6. 用输入框清空做一级成功判定
+7. 有必要时再用送达标记做二级验证
 
-### 5. Send Feishu schedule link
+速度和控制要求：
 
-Use only after Feishu event creation succeeds.
+- 不得为常规单条消息起子代理
+- 不得为标准发送长时间探索页面
+- 不得因为前端框架复杂就无限切换发送策略
+- 失败就进入可恢复暂停态
 
-Message must include:
+## 强约束动作集合
 
-- Confirmed interview time
-- Feishu event or join link
-- Simple instructions for attendance
-- A fallback instruction if the candidate cannot attend
+以下动作都属于强约束动作：
 
-## FAQ Boundaries
+- 打开候选人详情
+- 切换候选人线程
+- 索要附件简历
+- 发送标准模板消息
+- 收集可约时间
+- 确认面试时间
+- 发送飞书日程链接
 
-Safe for automatic reply:
+统一执行规则：
 
-- Role summary
-- Work location
-- Basic interview process
-- Base salary range if the user approved a fixed range
+1. 先准备好 payload
+2. 尽量停留在当前页面或线程
+3. 只允许一次短时主线程 `web-access` 尝试
+4. 用一次直接页面检查验证结果
+5. 失败就暂停并汇报，不继续发散探索
 
-Escalate to the user:
+## 可恢复暂停格式
 
-- Salary negotiation
-- Exceptional benefits requests
-- Sensitive company disputes
-- Emotional or hostile messages
-- Any answer requiring non-public company judgment
+强约束动作失败时，暂停信息必须包含：
 
-## Feishu Scheduling Rules
+- 失败动作
+- 目标候选人或线程
+- 已按快路径尝试且未继续乱试
+- 最可能原因
+- 用户最小恢复动作
 
-Use Lobster's existing Feishu capability rather than implementing a separate Feishu client inside this skill.
+推荐暂停标签：
 
-This skill creates only interview schedules, not todo items.
+- `paused_for_open_profile`
+- `paused_for_switch_thread`
+- `paused_for_send_message`
+- `paused_for_attachment_request`
+- `paused_for_availability_collection`
+- `paused_for_schedule_link_send`
 
-Default behavior:
+## 飞书日程规则
 
-- Add the user themself to the Feishu event
+本 skill 只创建面试日程，不创建 todo。
 
-When the first interview schedule is actually needed:
+第一次真正要创建面试日程时：
 
-- ask whether only the user should be added, or one extra fixed attendee should also be added
-- if the Feishu bot is not configured, ask the user to create it in Feishu Open Platform and return with `App ID` plus `App Secret`
-- after Lobster configures the bot locally, explicitly tell the user to go to the Feishu bot chat and ask the bot to test-create a schedule there
-- use that bot-chat flow to complete the needed calendar authorization
-- if event creation still fails because calendar permission is missing, guide the user to add the missing permission and retry through the same bot path
+- 询问默认参会人只加用户，还是再加一个固定账号
+- bot 未配置时，让用户去开放平台创建并交回 `App ID`/`App Secret`
+- 龙虾完成本地配置后，明确要求用户去飞书 bot 聊天里测试创建一个日程
+- 用 bot 聊天里的授权流程完成可用授权
+- 如果仍缺权限，再引导用户补权限并沿同一 bot 路径重试
 
-## Tool Boundary
+## 工具边界
 
-Treat these as the desired tool contracts:
+期望工具契约如下：
 
 ```ts
 list_candidate_sources(job_id)
@@ -309,19 +277,8 @@ send_boss_message(thread_id, template_id, variables)
 request_attachment(candidate_id)
 sync_attachment_to_feishu(candidate_id)
 
-create_feishu_review(candidate_packet)
 call_lobster_feishu_capability(event_payload)
 
 pause_candidate_flow(candidate_id, reason)
 request_human_review(candidate_id, packet)
 ```
-
-## Pause Conditions
-
-Pause immediately when:
-
-- BOSS asks for repeated verification
-- The account appears logged out
-- The site shows risk-control interruption
-- Structured extraction becomes unstable
-- Lobster does not have the required Feishu permission during scheduling
