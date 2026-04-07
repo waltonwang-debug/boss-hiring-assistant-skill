@@ -40,7 +40,7 @@
 
 只引导这些前置条件：
 
-1. 禁用或移除 `browser-use` 等浏览器 skill
+1. 由龙虾代为禁用或移除 `browser-use` 等浏览器 skill
 2. 由龙虾代为安装 `web-access`
    - GitHub 链接：`https://github.com/eze-is/web-access`
 3. 切换到 `web-access`
@@ -49,6 +49,9 @@
 6. 确认用户已登录 BOSS 网页端
 
 不要提前引导飞书 bot。
+
+对于第 1 步，不要先问用户“是否已禁用 browser-use”。
+应当先执行禁用，再把结果汇报给用户。
 
 同时必须向用户说明：
 
