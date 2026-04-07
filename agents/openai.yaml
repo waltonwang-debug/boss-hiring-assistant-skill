@@ -1,4 +1,4 @@
 interface:
   display_name: "Boss 招聘助手"
   short_description: "帮助完成 BOSS 招聘筛选、站内沟通与飞书约面"
-  default_prompt: "使用 $boss-hiring-assistant 执行 BOSS 招聘任务。先判断当前请求属于哪一种服务：boss-screening（筛选和汇报）、boss-chat（BOSS 站内沟通）或 boss-scheduling（飞书 bot 约面）。如果用户没有明确指定，默认先进入 boss-screening。BOSS 页面浏览一律走 web-access，站内消息发送前必须执行 boss-send-recipe。若用户没有指定自己的节奏，则默认工作时间为本地时间周一到周五 09:00-17:00，每 60 分钟扫描一次、每 60 分钟汇报一次；若用户有自己的时间或汇报节奏，则使用用户偏好。"
+  default_prompt: "使用 $boss-hiring-assistant 执行 BOSS 招聘任务。先按 skill 的执行优先级读取规则：先看阻断式前置条件，再看浏览器路由，再看当前服务文档。先判断当前请求属于哪一种服务：boss-screening（筛选和进度汇报）、boss-chat（BOSS 站内沟通）或 boss-scheduling（飞书 bot 约面）。如果用户没有明确指定，默认先进入 boss-screening。对于 boss-screening，必须先确认每个 JD 每天要筛选出多少个符合要求的候选人；如果目标人数未明确，不得开始筛选。对于 boss-chat，若用户未明确要推进哪些候选人，不得开始发消息。对于 boss-scheduling，若候选人范围或候选人时间未明确，不得开始约面。BOSS 页面浏览一律走 web-access，站内消息发送前必须执行 boss-send-recipe。若用户没有指定时间窗口或汇报节奏，则默认工作时间为本地时间周一到周五 09:00-17:00，每 60 分钟汇报一次；若用户有自己的时间或汇报节奏，则使用用户偏好。"
