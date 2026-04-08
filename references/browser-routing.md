@@ -86,8 +86,10 @@
 
 1. `browser-use` 等浏览器 skill 已由龙虾代为禁用或移除
 2. `web-access` 已安装
-3. 当前任务确实已切到 `web-access`
-4. 能访问用户真实 Chrome / Chromium 会话
+3. 用户已经先在 Chrome / Chromium 中打开并登录 BOSS 直聘招聘者页面
+4. 当前任务确实已切到 `web-access`
+5. 能访问用户真实 Chrome / Chromium 会话
+6. 当前会话里确实存在已登录的 Boss tab
 
 如果检查不通过，立即暂停，不继续后续流程。
 
@@ -99,6 +101,11 @@
 Boss 任务中，优先级最高的浏览器规则是：
 
 - 只复用用户当前已经登录的 Boss tab
+
+因此，在开始接管浏览器前，必须先让用户完成：
+
+- 打开 Chrome / Chromium
+- 登录 BOSS 直聘招聘者页面
 
 必须先做：
 
