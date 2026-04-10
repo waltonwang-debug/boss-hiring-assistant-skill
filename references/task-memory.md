@@ -77,6 +77,11 @@ Boss 招聘流程是长流程任务，不能只依赖龙虾通用记忆，所以
 - `pending_user_confirmation`
 - `resume_read_failed`
 - `needs_rescan`
+- `attachment_requested`
+- `attachment_sent_by_candidate`
+- `attachment_receive_pending`
+- `attachment_received`
+- `wrong_candidate_thread_detected`
 
 ## 来源相关判断建议
 

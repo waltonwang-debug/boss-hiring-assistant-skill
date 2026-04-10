@@ -18,6 +18,14 @@
 2. `web-access` CDP / eval
 3. `web-access` 低风险 click / read
 
+对于 Boss 页面里的关键点击动作，点击路径优先级固定为：
+
+1. `web-access clickAt`
+2. `web-access` 底层 CDP `Input.dispatchMouseEvent`
+3. DOM `element.click()` 仅作单次兜底
+
+不要把 DOM click 当作默认主路径，尤其不要在批量打招呼时默认用 `btn.click()`。
+
 ## web-access eval 使用规则
 
 当需要使用 `web-access` / cdpproxy 的 eval 接口时，不要一上来就提交复杂 JS 逻辑。
@@ -62,6 +70,7 @@
 - 默认使用截图、OCR、图像理解来读页面
 - 为普通页面读取起子代理
 - 在一个动作里来回切换多种浏览器方案
+- 把 Boss 页面关键点击默认实现成 DOM `element.click()`
 
 ## 截图路径的边界
 
